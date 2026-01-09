@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright, Page, Browser
 from bs4 import BeautifulSoup
 import config
 from scrapers import BaseScraper
-from ai_companies_100 import AI_COMPANIES_100, is_us_location
+from ai_companies_100 import AI_COMPANIES_100, is_us_location, get_company_sector
 
 
 class PlaywrightScraper(BaseScraper):
@@ -99,7 +99,8 @@ class MicrosoftScraper(PlaywrightScraper):
                             "description": title,  # Limited description from listing
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:
@@ -169,7 +170,8 @@ class AmazonScraper(PlaywrightScraper):
                             "description": title,
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:
@@ -237,7 +239,8 @@ class GoogleScraper(PlaywrightScraper):
                             "description": title,
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:
@@ -305,7 +308,8 @@ class AppleScraper(PlaywrightScraper):
                             "description": title,
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:
@@ -375,7 +379,8 @@ class MetaScraper(PlaywrightScraper):
                             "description": title,
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:
@@ -443,7 +448,8 @@ class NetflixScraper(PlaywrightScraper):
                             "description": title,
                             "url": link,
                             "posted_date": None,
-                            "scraped_date": datetime.now().isoformat()
+                            "scraped_date": datetime.now().isoformat(),
+                            "sector": get_company_sector(self.company_key)
                         })
 
                     except Exception as e:

@@ -11,7 +11,8 @@ from ai_companies_100 import (
     AI_COMPANIES_100,
     get_greenhouse_companies,
     get_lever_companies,
-    is_us_location
+    is_us_location,
+    get_company_sector
 )
 from web_scrapers import get_web_scraper, WEB_SCRAPERS
 
@@ -23,6 +24,7 @@ class GreenhouseScraper(BaseScraper):
         if company_key not in AI_COMPANIES_100:
             raise ValueError(f"Unknown company: {company_key}")
 
+        self.company_key = company_key
         self.company_config = AI_COMPANIES_100[company_key]
         super().__init__(self.company_config["name"])
         self.api_url = self.company_config.get("api_url")
@@ -58,7 +60,8 @@ class GreenhouseScraper(BaseScraper):
                     "description": self._extract_text(job.get("content", "")),
                     "url": job.get("absolute_url", ""),
                     "posted_date": job.get("updated_at"),
-                    "scraped_date": datetime.now().isoformat()
+                    "scraped_date": datetime.now().isoformat(),
+                    "sector": get_company_sector(self.company_key)
                 })
 
             print(f"  Found {len(jobs)} jobs from {self.board_name}")
@@ -95,6 +98,7 @@ class LeverScraper(BaseScraper):
         if company_key not in AI_COMPANIES_100:
             raise ValueError(f"Unknown company: {company_key}")
 
+        self.company_key = company_key
         self.company_config = AI_COMPANIES_100[company_key]
         super().__init__(self.company_config["name"])
         self.api_url = self.company_config.get("api_url")
@@ -130,7 +134,8 @@ class LeverScraper(BaseScraper):
                     "description": self._extract_description(job),
                     "url": job.get("hostedUrl", ""),
                     "posted_date": None,
-                    "scraped_date": datetime.now().isoformat()
+                    "scraped_date": datetime.now().isoformat(),
+                    "sector": get_company_sector(self.company_key)
                 })
 
             print(f"  Found {len(jobs)} jobs from {self.board_name}")
@@ -225,7 +230,7 @@ class CompanyScraperManager:
         return all_jobs
 
     def scrape_tier(self, tier: int) -> List[Dict]:
-        """Scrape companies by tier (1-6)."""
+        """Scrape companies by tier (1-8)."""
         from ai_companies_100 import get_companies_by_tier
 
         tier_companies = get_companies_by_tier(tier)

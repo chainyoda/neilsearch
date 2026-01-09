@@ -90,10 +90,17 @@ class Database:
             )
         """)
 
+        # Add sector column if it doesn't exist (migration)
+        try:
+            cursor.execute("ALTER TABLE jobs ADD COLUMN sector TEXT")
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+
         # Create indexes
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_match_score ON jobs(match_score DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_scraped_date ON jobs(scraped_date DESC)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_company ON jobs(company)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_jobs_sector ON jobs(sector)")
 
         self.conn.commit()
 
@@ -135,8 +142,8 @@ class Database:
             INSERT INTO jobs (
                 id, board_name, company, title, location, description,
                 url, posted_date, scraped_date, match_score, match_breakdown,
-                skills_matched, skills_missing, match_explanation
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                skills_matched, skills_missing, match_explanation, sector
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             job_data["id"],
             job_data["board_name"],
@@ -151,7 +158,8 @@ class Database:
             json.dumps(job_data.get("match_breakdown", {})),
             json.dumps(job_data.get("skills_matched", [])),
             json.dumps(job_data.get("skills_missing", [])),
-            job_data.get("match_explanation")
+            job_data.get("match_explanation"),
+            job_data.get("sector")
         ))
         self.conn.commit()
         return True

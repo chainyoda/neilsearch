@@ -719,6 +719,398 @@ AI_COMPANIES_100 = {
         "type": "api",
         "tier": 6
     },
+
+    # TIER 7: Financial Services - Investment Banks & Hedge Funds (20 companies)
+    "goldman_sachs": {
+        "name": "Goldman Sachs",
+        "url": "https://www.goldmansachs.com/careers",
+        "jobs_url": "https://www.goldmansachs.com/careers/find-a-role/search?keywords=machine%20learning",
+        "type": "scrape",
+        "tier": 7
+    },
+    "jpmorgan": {
+        "name": "JPMorgan Chase",
+        "url": "https://careers.jpmorgan.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/jpmorganchase/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "morgan_stanley": {
+        "name": "Morgan Stanley",
+        "url": "https://www.morganstanley.com/careers",
+        "jobs_url": "https://morganstanley.tal.net/vx/lang-en-GB/mobile-0/appcentre-1/brand-2/candidate/jobboard/vacancy/1/adv",
+        "type": "scrape",
+        "tier": 7
+    },
+    "citadel": {
+        "name": "Citadel",
+        "url": "https://www.citadel.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/citadel/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "citadel_securities": {
+        "name": "Citadel Securities",
+        "url": "https://www.citadelsecurities.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/citadelsecurities/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "jane_street": {
+        "name": "Jane Street",
+        "url": "https://www.janestreet.com/join-jane-street",
+        "jobs_url": "https://www.janestreet.com/join-jane-street/open-positions",
+        "type": "scrape",
+        "tier": 7
+    },
+    "two_sigma": {
+        "name": "Two Sigma",
+        "url": "https://www.twosigma.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/twosigma/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "de_shaw": {
+        "name": "D. E. Shaw & Co.",
+        "url": "https://www.deshaw.com/careers",
+        "jobs_url": "https://www.deshaw.com/careers/choose-your-path",
+        "type": "scrape",
+        "tier": 7
+    },
+    "bridgewater": {
+        "name": "Bridgewater Associates",
+        "url": "https://www.bridgewater.com/careers",
+        "jobs_url": "https://boards.greenhouse.io/bridgewater",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bridgewater/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "renaissance": {
+        "name": "Renaissance Technologies",
+        "url": "https://www.rentec.com/Careers.action",
+        "jobs_url": "https://www.rentec.com/Careers.action",
+        "type": "scrape",
+        "tier": 7
+    },
+    "point72": {
+        "name": "Point72",
+        "url": "https://careers.point72.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/point72/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "millennium": {
+        "name": "Millennium Management",
+        "url": "https://www.mlp.com/careers",
+        "jobs_url": "https://www.mlp.com/careers/#positions",
+        "type": "scrape",
+        "tier": 7
+    },
+    "aqr": {
+        "name": "AQR Capital Management",
+        "url": "https://www.aqr.com/Careers",
+        "jobs_url": "https://careers.aqr.com/jobs",
+        "type": "scrape",
+        "tier": 7
+    },
+    "worldquant": {
+        "name": "WorldQuant",
+        "url": "https://www.worldquant.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/worldquant/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "jump_trading": {
+        "name": "Jump Trading",
+        "url": "https://www.jumptrading.com/careers",
+        "jobs_url": "https://www.jumptrading.com/careers/open-positions",
+        "type": "scrape",
+        "tier": 7
+    },
+    "hrt": {
+        "name": "Hudson River Trading",
+        "url": "https://www.hudsonrivertrading.com/careers",
+        "jobs_url": "https://www.hudsonrivertrading.com/careers/job-openings",
+        "type": "scrape",
+        "tier": 7
+    },
+    "virtu": {
+        "name": "Virtu Financial",
+        "url": "https://www.virtu.com/careers",
+        "jobs_url": "https://www.virtu.com/careers/#openings",
+        "type": "scrape",
+        "tier": 7
+    },
+    "tower_research": {
+        "name": "Tower Research Capital",
+        "url": "https://www.tower-research.com/careers",
+        "jobs_url": "https://www.tower-research.com/open-positions",
+        "type": "scrape",
+        "tier": 7
+    },
+    "imc_trading": {
+        "name": "IMC Trading",
+        "url": "https://www.imc.com/us/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/imc/jobs",
+        "type": "api",
+        "tier": 7
+    },
+    "sig": {
+        "name": "Susquehanna International Group (SIG)",
+        "url": "https://sig.com/careers",
+        "jobs_url": "https://careers.sig.com/job-openings",
+        "type": "scrape",
+        "tier": 7
+    },
+
+    # TIER 8: Major Tech Companies (20 companies)
+    "oracle": {
+        "name": "Oracle",
+        "url": "https://www.oracle.com/careers",
+        "jobs_url": "https://eeho.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/jobsearch/results?keyword=machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "cisco": {
+        "name": "Cisco",
+        "url": "https://jobs.cisco.com",
+        "jobs_url": "https://jobs.cisco.com/jobs/SearchJobs/machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "intel": {
+        "name": "Intel",
+        "url": "https://jobs.intel.com",
+        "jobs_url": "https://jobs.intel.com/en/search-jobs/machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "amd": {
+        "name": "AMD",
+        "url": "https://careers.amd.com",
+        "jobs_url": "https://careers.amd.com/careers-home/jobs?keywords=machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "vmware": {
+        "name": "VMware",
+        "url": "https://careers.vmware.com",
+        "jobs_url": "https://careers.vmware.com/main/jobs?keywords=machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "intuit": {
+        "name": "Intuit",
+        "url": "https://www.intuit.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/intuit/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "workday": {
+        "name": "Workday",
+        "url": "https://www.workday.com/en-us/company/careers.html",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/workday/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "square": {
+        "name": "Square (Block)",
+        "url": "https://careers.squareup.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/square/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "paypal": {
+        "name": "PayPal",
+        "url": "https://www.paypal.com/us/webapps/mpp/jobs",
+        "jobs_url": "https://jobsearch.paypal-corp.com/en-US/search?keywords=machine%20learning",
+        "type": "scrape",
+        "tier": 8
+    },
+    "uber": {
+        "name": "Uber",
+        "url": "https://www.uber.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/uber/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "lyft": {
+        "name": "Lyft",
+        "url": "https://www.lyft.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/lyft/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "airbnb": {
+        "name": "Airbnb",
+        "url": "https://careers.airbnb.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/airbnb/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "doordash": {
+        "name": "DoorDash",
+        "url": "https://careers.doordash.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/doordash/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "instacart": {
+        "name": "Instacart",
+        "url": "https://careers.instacart.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/instacart/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "robinhood": {
+        "name": "Robinhood",
+        "url": "https://robinhood.com/us/en/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/robinhood/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "coinbase": {
+        "name": "Coinbase",
+        "url": "https://www.coinbase.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/coinbase/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "roblox": {
+        "name": "Roblox",
+        "url": "https://corp.roblox.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/roblox/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "discord": {
+        "name": "Discord",
+        "url": "https://discord.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/discord/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "reddit": {
+        "name": "Reddit",
+        "url": "https://www.redditinc.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/reddit/jobs",
+        "type": "api",
+        "tier": 8
+    },
+    "twitter": {
+        "name": "X (Twitter)",
+        "url": "https://careers.twitter.com",
+        "jobs_url": "https://careers.twitter.com/en/roles.html",
+        "type": "scrape",
+        "tier": 8
+    },
+
+    # TIER 9: Game Developers (15 companies)
+    "ea": {
+        "name": "Electronic Arts (EA)",
+        "url": "https://www.ea.com/careers",
+        "jobs_url": "https://ea.gr8people.com/jobs",
+        "type": "scrape",
+        "tier": 9
+    },
+    "ubisoft": {
+        "name": "Ubisoft",
+        "url": "https://www.ubisoft.com/en-us/company/careers",
+        "jobs_url": "https://www.ubisoft.com/en-us/company/careers/search",
+        "type": "scrape",
+        "tier": 9
+    },
+    "epic_games": {
+        "name": "Epic Games",
+        "url": "https://www.epicgames.com/site/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/epicgames/jobs",
+        "type": "api",
+        "tier": 9
+    },
+    "riot_games": {
+        "name": "Riot Games",
+        "url": "https://www.riotgames.com/en/work-with-us",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/riotgames/jobs",
+        "type": "api",
+        "tier": 9
+    },
+    "valve": {
+        "name": "Valve",
+        "url": "https://www.valvesoftware.com/en/jobs",
+        "jobs_url": "https://www.valvesoftware.com/en/jobs",
+        "type": "scrape",
+        "tier": 9
+    },
+    "blizzard": {
+        "name": "Blizzard Entertainment",
+        "url": "https://careers.blizzard.com",
+        "jobs_url": "https://careers.blizzard.com/global/en/search-results",
+        "type": "scrape",
+        "tier": 9
+    },
+    "bungie": {
+        "name": "Bungie",
+        "url": "https://careers.bungie.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bungie/jobs",
+        "type": "api",
+        "tier": 9
+    },
+    "rockstar": {
+        "name": "Rockstar Games",
+        "url": "https://www.rockstargames.com/careers",
+        "jobs_url": "https://www.rockstargames.com/careers/openings",
+        "type": "scrape",
+        "tier": 9
+    },
+    "take_two": {
+        "name": "Take-Two Interactive",
+        "url": "https://www.take2games.com/careers",
+        "jobs_url": "https://www.take2games.com/careers/#openings",
+        "type": "scrape",
+        "tier": 9
+    },
+    "unity": {
+        "name": "Unity Technologies",
+        "url": "https://unity.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/unity/jobs",
+        "type": "api",
+        "tier": 9
+    },
+    "activision": {
+        "name": "Activision",
+        "url": "https://www.activision.com/careers",
+        "jobs_url": "https://www.activision.com/careers/jobs",
+        "type": "scrape",
+        "tier": 9
+    },
+    "playstation": {
+        "name": "PlayStation Studios",
+        "url": "https://www.playstation.com/en-us/corporate/playstation-careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/sonyinteractiveentertainmentplaystation/jobs",
+        "type": "api",
+        "tier": 9
+    },
+    "nintendo": {
+        "name": "Nintendo of America",
+        "url": "https://careers.nintendo.com",
+        "jobs_url": "https://careers.nintendo.com/job-openings",
+        "type": "scrape",
+        "tier": 9
+    },
+    "king": {
+        "name": "King (Candy Crush)",
+        "url": "https://www.king.com/careers",
+        "jobs_url": "https://www.king.com/careers/jobs",
+        "type": "scrape",
+        "tier": 9
+    },
+    "zynga": {
+        "name": "Zynga (Take-Two)",
+        "url": "https://www.zynga.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/zynga/jobs",
+        "type": "api",
+        "tier": 9
+    },
 }
 
 # Location filters for US-only jobs
@@ -809,11 +1201,36 @@ def is_us_location(location: str) -> bool:
     # If we can't determine, exclude to be safe
     return False
 
+def get_sector_for_tier(tier: int) -> str:
+    """Get sector name for a given tier."""
+    sector_map = {
+        1: "AI/ML",
+        2: "AI/ML",
+        3: "AI/ML",
+        4: "AI/ML",
+        5: "AI/ML",
+        6: "AI/ML",
+        7: "Financial Services",
+        8: "Tech",
+        9: "Gaming"
+    }
+    return sector_map.get(tier, "Other")
+
+def get_company_sector(company_key: str) -> str:
+    """Get sector for a specific company."""
+    company = AI_COMPANIES_100.get(company_key, {})
+    tier = company.get("tier", 0)
+    return get_sector_for_tier(tier)
+
 def get_companies_by_tier(tier: int = None):
-    """Get companies by tier (1-6)."""
+    """Get companies by tier (1-9)."""
     if tier:
         return {k: v for k, v in AI_COMPANIES_100.items() if v.get("tier") == tier}
     return AI_COMPANIES_100
+
+def get_companies_by_sector(sector: str):
+    """Get companies by sector (AI/ML, Financial Services, Tech, Gaming)."""
+    return {k: v for k, v in AI_COMPANIES_100.items() if get_company_sector(k) == sector}
 
 def get_api_companies():
     """Get companies that have public APIs."""

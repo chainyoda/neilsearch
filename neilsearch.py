@@ -232,11 +232,11 @@ def list_companies():
         get_api_companies_count
     )
 
-    console.print("\n[bold blue]Top 100 AI/ML Companies (US & Remote Jobs Only)[/bold blue]\n")
+    console.print("\n[bold blue]All Companies: AI/ML, Finance & Tech (US & Remote Jobs Only)[/bold blue]\n")
     console.print(f"[green]Total Companies:[/green] {get_all_companies_count()}")
     console.print(f"[green]With Public APIs:[/green] {get_api_companies_count()}\n")
 
-    for tier_num in range(1, 7):
+    for tier_num in range(1, 10):
         tier_companies = get_companies_by_tier(tier_num)
         if tier_companies:
             tier_names = {
@@ -245,7 +245,10 @@ def list_companies():
                 3: "AI Tools & Platforms",
                 4: "AI-Powered Products",
                 5: "Robotics & Applied AI",
-                6: "Enterprise AI"
+                6: "Enterprise AI",
+                7: "Financial Services - Investment Banks & Hedge Funds",
+                8: "Major Tech Companies",
+                9: "Game Developers"
             }
 
             console.print(f"[bold]Tier {tier_num}: {tier_names[tier_num]}[/bold]")
