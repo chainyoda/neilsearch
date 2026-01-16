@@ -373,11 +373,10 @@ DASHBOARD_TEMPLATE = """
             <div>
                 <label>Date Posted</label>
                 <select id="dateFilter">
-                    <option value="">All Time</option>
-                    <option value="week">Last Week</option>
-                    <option value="month">Last Month</option>
-                    <option value="quarter">Last Quarter</option>
-                    <option value="older">More than 3 Months</option>
+                    <option value="">Any Time</option>
+                    <option value="week">Last 7 Days</option>
+                    <option value="month">Last 30 Days</option>
+                    <option value="quarter">Last 90 Days</option>
                 </select>
             </div>
         </div>
@@ -677,9 +676,9 @@ DASHBOARD_TEMPLATE = """
 
             // Calculate date thresholds
             const now = new Date();
-            const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-            const oneMonthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
-            const threeMonthsAgo = new Date(now - 90 * 24 * 60 * 60 * 1000);
+            const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
 
             let filtered = jobsData.filter(job => {
                 if (job.match_score < minScore) return false;
@@ -695,11 +694,26 @@ DASHBOARD_TEMPLATE = """
                 }
                 // Date filter
                 if (dateFilter) {
-                    const jobDate = new Date(job.posted_date || job.scraped_date);
+                    // Get the best available date - prefer posted_date, fall back to scraped_date
+                    let dateStr = job.posted_date;
+
+                    // Check if posted_date is invalid (null, undefined, empty, or 'nan')
+                    if (dateStr === null || dateStr === undefined || dateStr === '' || dateStr === 'nan') {
+                        dateStr = job.scraped_date;
+                    }
+
+                    // If still no date, include the job
+                    if (!dateStr) return true;
+
+                    const jobDate = new Date(dateStr);
+
+                    // If date parsing failed, include the job
+                    if (isNaN(jobDate.getTime())) return true;
+
+                    // Filter based on selection
                     if (dateFilter === 'week' && jobDate < oneWeekAgo) return false;
                     if (dateFilter === 'month' && jobDate < oneMonthAgo) return false;
                     if (dateFilter === 'quarter' && jobDate < threeMonthsAgo) return false;
-                    if (dateFilter === 'older' && jobDate >= threeMonthsAgo) return false;
                 }
                 return true;
             });
@@ -824,6 +838,7 @@ def generate_dashboard(jobs: List[Dict], stats: Dict, profile: Dict) -> str:
             "skills_missing": job.get("skills_missing", []),
             "match_breakdown": job.get("match_breakdown", {}),
             "app_status": job.get("app_status", ""),
+            "posted_date": job.get("posted_date"),
             "scraped_date": job["scraped_date"],
             "sector": job.get("sector", "Other")
         }
