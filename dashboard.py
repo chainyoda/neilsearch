@@ -380,6 +380,7 @@ DASHBOARD_TEMPLATE = """
                 </select>
             </div>
         </div>
+        <button class="btn btn-secondary" id="resetFilters" onclick="resetAllFilters()">Reset All Filters</button>
     </div>
 
     <div class="analytics">
@@ -610,6 +611,19 @@ DASHBOARD_TEMPLATE = """
             console.log(`Update status for ${jobId} to ${status}`);
             // In a real implementation, this would call back to Python to update the database
             alert(`Status updated to: ${status}\\nNote: This is a demo. Status updates aren't persisted in this version.`);
+        }
+
+        function resetAllFilters() {
+            document.getElementById('minScore').value = 0;
+            document.getElementById('minScoreValue').textContent = '0';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('sortBy').value = 'score';
+            document.getElementById('companyFilter').value = '';
+            document.getElementById('sectorFilter').value = '';
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            filterAndSortJobs();
         }
 
         // Populate company dropdown
