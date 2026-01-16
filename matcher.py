@@ -261,8 +261,13 @@ class JobMatcher:
 
     def _score_fresh_grad_friendly(self, title: str, description: str) -> float:
         """Score based on how suitable the job is for fresh graduates."""
+        title_lower = title.lower()
         text = f"{title} {description}".lower()
         score = 15  # Start with neutral score
+
+        # HIGHEST priority: Internship/Intern in job title (big bonus)
+        if "intern" in title_lower or "internship" in title_lower:
+            score += 25  # Major bonus for internship positions
 
         # Strong positive indicators for fresh grads (high bonus)
         fresh_grad_keywords = [
@@ -272,15 +277,18 @@ class JobMatcher:
             "0-2 years", "0-1 years", "1-2 years", "0 years",
             "no experience required", "will train",
             "early career", "early-career", "starting your career",
-            "rotational program", "graduate program", "new college"
+            "rotational program", "graduate program", "new college",
+            "internship", "summer intern", "fall intern", "spring intern",
+            "co-op", "coop program", "apprentice", "apprenticeship",
+            "graduate trainee", "trainee program", "campus hire"
         ]
 
         for keyword in fresh_grad_keywords:
             if keyword in text:
                 score += 10  # Big bonus for each fresh grad indicator
 
-        # Internship converted to full-time is good
-        if "intern" in text and ("full-time" in text or "full time" in text or "convert" in text):
+        # Internship mentions in description (even if not in title)
+        if "intern" in text and "intern" not in title_lower:
             score += 8
 
         # Moderate positive indicators
