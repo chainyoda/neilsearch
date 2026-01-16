@@ -219,6 +219,14 @@ DASHBOARD_TEMPLATE = """
             color: #2c3e50;
         }
 
+        .btn-reset {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            font-weight: 700;
+            padding: 10px 16px;
+        }
+
         .status-select {
             padding: 6px 12px;
             border: 1px solid #ddd;
@@ -379,8 +387,11 @@ DASHBOARD_TEMPLATE = """
                     <option value="quarter">Last 90 Days</option>
                 </select>
             </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn btn-reset" id="resetFilters" onclick="resetAllFilters()">Reset All Filters</button>
+            </div>
         </div>
-        <button class="btn btn-secondary" id="resetFilters" onclick="resetAllFilters()">Reset All Filters</button>
     </div>
 
     <div class="analytics">
