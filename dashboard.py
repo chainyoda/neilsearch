@@ -370,6 +370,16 @@ DASHBOARD_TEMPLATE = """
                     <option value="">All Locations</option>
                 </select>
             </div>
+            <div>
+                <label>Date Posted</label>
+                <select id="dateFilter">
+                    <option value="">All Time</option>
+                    <option value="week">Last Week</option>
+                    <option value="month">Last Month</option>
+                    <option value="quarter">Last Quarter</option>
+                    <option value="older">More than 3 Months</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -663,6 +673,13 @@ DASHBOARD_TEMPLATE = """
             const companyFilter = document.getElementById('companyFilter').value;
             const sectorFilter = document.getElementById('sectorFilter').value;
             const locationFilter = document.getElementById('locationFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            // Calculate date thresholds
+            const now = new Date();
+            const oneWeekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+            const oneMonthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+            const threeMonthsAgo = new Date(now - 90 * 24 * 60 * 60 * 1000);
 
             let filtered = jobsData.filter(job => {
                 if (job.match_score < minScore) return false;
@@ -675,6 +692,14 @@ DASHBOARD_TEMPLATE = """
                 if (locationFilter) {
                     const jobLocations = (job.location || '').split('; ');
                     if (!jobLocations.includes(locationFilter)) return false;
+                }
+                // Date filter
+                if (dateFilter) {
+                    const jobDate = new Date(job.posted_date || job.scraped_date);
+                    if (dateFilter === 'week' && jobDate < oneWeekAgo) return false;
+                    if (dateFilter === 'month' && jobDate < oneMonthAgo) return false;
+                    if (dateFilter === 'quarter' && jobDate < threeMonthsAgo) return false;
+                    if (dateFilter === 'older' && jobDate >= threeMonthsAgo) return false;
                 }
                 return true;
             });
@@ -707,6 +732,7 @@ DASHBOARD_TEMPLATE = """
         document.getElementById('companyFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('sectorFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('locationFilter').addEventListener('change', filterAndSortJobs);
+        document.getElementById('dateFilter').addEventListener('change', filterAndSortJobs);
 
         // Initialize Charts FIRST (before any filtering)
         // Companies chart

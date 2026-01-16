@@ -2062,6 +2062,127 @@ AI_COMPANIES_100 = {
         "type": "api",
         "tier": 18
     },
+
+    # ============ TIER 19: Data Centers & Hyperscalers ============
+    "cloudflare": {
+        "name": "Cloudflare",
+        "url": "https://www.cloudflare.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cloudflare/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "equinix": {
+        "name": "Equinix",
+        "url": "https://careers.equinix.com/",
+        "api_url": "https://api.lever.co/v0/postings/equinix",
+        "type": "api",
+        "tier": 19
+    },
+    "digitalocean": {
+        "name": "DigitalOcean",
+        "url": "https://www.digitalocean.com/careers",
+        "api_url": "https://api.lever.co/v0/postings/digitalocean",
+        "type": "api",
+        "tier": 19
+    },
+    "fastly": {
+        "name": "Fastly",
+        "url": "https://www.fastly.com/about/careers",
+        "api_url": "https://api.lever.co/v0/postings/fastly",
+        "type": "api",
+        "tier": 19
+    },
+    "akamai": {
+        "name": "Akamai",
+        "url": "https://www.akamai.com/careers",
+        "api_url": "https://api.lever.co/v0/postings/akamai",
+        "type": "api",
+        "tier": 19
+    },
+    "coresite": {
+        "name": "CoreSite",
+        "url": "https://www.coresite.com/company/careers",
+        "api_url": "https://api.lever.co/v0/postings/coresite",
+        "type": "api",
+        "tier": 19
+    },
+    "datadog": {
+        "name": "Datadog",
+        "url": "https://www.datadoghq.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/datadog/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "mongodb": {
+        "name": "MongoDB",
+        "url": "https://www.mongodb.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/mongodb/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "snowflake": {
+        "name": "Snowflake",
+        "url": "https://www.snowflake.com/en/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/snowflakecomputing/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "confluent": {
+        "name": "Confluent",
+        "url": "https://www.confluent.io/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/confluent/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "hashicorp": {
+        "name": "HashiCorp",
+        "url": "https://www.hashicorp.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/hashicorp/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "elastic": {
+        "name": "Elastic",
+        "url": "https://www.elastic.co/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/elastic/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "netlify": {
+        "name": "Netlify",
+        "url": "https://www.netlify.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/netlify/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "vercel": {
+        "name": "Vercel",
+        "url": "https://vercel.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "supabase": {
+        "name": "Supabase",
+        "url": "https://supabase.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/supabase/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "planetscale": {
+        "name": "PlanetScale",
+        "url": "https://planetscale.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/planetscale/jobs",
+        "type": "api",
+        "tier": 19
+    },
+    "cockroach_labs": {
+        "name": "Cockroach Labs",
+        "url": "https://www.cockroachlabs.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cockroachlabs/jobs",
+        "type": "api",
+        "tier": 19
+    },
 }
 
 # Location filters for US-only jobs
@@ -2174,7 +2295,8 @@ def get_sector_for_tier(tier: int) -> str:
         15: "Research/Academia",
         16: "Semiconductor/Hardware",
         17: "YC Startups",
-        18: "Consulting"
+        18: "Consulting",
+        19: "Data Centers/Cloud"
     }
     return sector_map.get(tier, "Other")
 

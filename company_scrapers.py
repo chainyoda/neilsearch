@@ -455,22 +455,45 @@ class JobSpyAggregatorScraper:
         all_jobs = []
         seen_urls = set()
 
+        # Company name variations for filtering
+        company_aliases = {
+            "McKinsey": ["mckinsey", "quantumblack"],
+            "BCG": ["bcg", "boston consulting"],
+            "Boston Consulting Group": ["bcg", "boston consulting"],
+            "Bain & Company": ["bain"],
+            "Deloitte": ["deloitte"],
+            "PwC": ["pwc", "pricewaterhousecoopers"],
+            "EY": ["ey", "ernst & young", "ernst young"],
+            "Ernst & Young": ["ey", "ernst & young", "ernst young"],
+            "KPMG": ["kpmg"],
+            "Accenture": ["accenture"],
+            "Booz Allen": ["booz allen"],
+            "Oliver Wyman": ["oliver wyman"],
+            "Kearney": ["kearney"],
+            "Capgemini": ["capgemini"],
+        }
+
         # Search for ML jobs at consulting companies
         for company in self.CONSULTING_COMPANIES:
             for search_term in self.ML_SEARCH_TERMS[:2]:  # Limit searches
                 try:
-                    print(f"  Searching {company} for '{search_term}'...")
+                    # Use quotes around company name for more accurate results
+                    search_query = f'"{company}" {search_term}'
+                    print(f"  Searching: {search_query}...")
 
                     jobs_df = scrape_jobs(
-                        site_name=["indeed", "linkedin", "glassdoor"],
-                        search_term=f"{search_term} {company}",
+                        site_name=["indeed", "linkedin"],
+                        search_term=search_query,
                         location="United States",
-                        results_wanted=min(results_wanted, 20),
-                        hours_old=168,  # Last 7 days
+                        results_wanted=min(results_wanted, 30),
+                        hours_old=336,  # Last 14 days
                         country_indeed="USA",
                     )
 
                     if jobs_df is not None and len(jobs_df) > 0:
+                        # Get aliases for this company
+                        aliases = company_aliases.get(company, [company.lower()])
+
                         for _, row in jobs_df.iterrows():
                             job_url = str(row.get("job_url", ""))
 
@@ -479,8 +502,14 @@ class JobSpyAggregatorScraper:
                                 continue
                             seen_urls.add(job_url)
 
+                            job_company = str(row.get("company", "")).lower()
                             title = str(row.get("title", ""))
                             description = str(row.get("description", ""))
+
+                            # Filter to only jobs from the target company
+                            is_target_company = any(alias in job_company for alias in aliases)
+                            if not is_target_company:
+                                continue
 
                             # Filter for ML/AI roles only
                             if not is_ml_ai_role(title, description):
@@ -504,7 +533,7 @@ class JobSpyAggregatorScraper:
                             }
                             all_jobs.append(job)
 
-                        print(f"    Found {len(jobs_df)} jobs, {len(all_jobs)} ML/AI roles total")
+                        print(f"    Found {len(jobs_df)} results, {len(all_jobs)} verified ML/AI roles")
 
                     time.sleep(2)  # Rate limiting
 
