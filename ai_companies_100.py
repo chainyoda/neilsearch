@@ -5,8 +5,8 @@ AI_COMPANIES_100 = {
     "openai": {
         "name": "OpenAI",
         "url": "https://openai.com/careers",
-        "api_url": "https://api.lever.co/v0/postings/openai",
-        "type": "api",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/openai",
+        "type": "ashby",
         "tier": 1
     },
     "anthropic": {
@@ -77,8 +77,8 @@ AI_COMPANIES_100 = {
     "cohere": {
         "name": "Cohere",
         "url": "https://cohere.com/careers",
-        "api_url": "https://api.lever.co/v0/postings/cohere",
-        "type": "api",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/cohere",
+        "type": "ashby",
         "tier": 2
     },
     "huggingface": {
@@ -98,7 +98,7 @@ AI_COMPANIES_100 = {
     "inflection": {
         "name": "Inflection AI",
         "url": "https://inflection.ai/careers",
-        "api_url": "https://api.lever.co/v0/postings/inflection-ai",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/inflectionai/jobs",
         "type": "api",
         "tier": 2
     },
@@ -175,7 +175,7 @@ AI_COMPANIES_100 = {
     "glean": {
         "name": "Glean",
         "url": "https://glean.com/careers",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/glean/jobs",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/gleanwork/jobs",
         "type": "api",
         "tier": 2
     },
@@ -731,8 +731,8 @@ AI_COMPANIES_100 = {
     "jpmorgan": {
         "name": "JPMorgan Chase",
         "url": "https://careers.jpmorgan.com",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/jpmorganchase/jobs",
-        "type": "api",
+        "jobs_url": "https://careers.jpmorgan.com/us/en/search-results?keywords=machine%20learning",
+        "type": "scrape",
         "tier": 7
     },
     "morgan_stanley": {
@@ -745,15 +745,15 @@ AI_COMPANIES_100 = {
     "citadel": {
         "name": "Citadel",
         "url": "https://www.citadel.com/careers",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/citadel/jobs",
-        "type": "api",
+        "jobs_url": "https://www.citadel.com/careers/open-opportunities/",
+        "type": "scrape",
         "tier": 7
     },
     "citadel_securities": {
         "name": "Citadel Securities",
         "url": "https://www.citadelsecurities.com/careers",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/citadelsecurities/jobs",
-        "type": "api",
+        "jobs_url": "https://www.citadelsecurities.com/careers/open-opportunities/",
+        "type": "scrape",
         "tier": 7
     },
     "jane_street": {
@@ -766,8 +766,8 @@ AI_COMPANIES_100 = {
     "two_sigma": {
         "name": "Two Sigma",
         "url": "https://www.twosigma.com/careers",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/twosigma/jobs",
-        "type": "api",
+        "jobs_url": "https://careers.twosigma.com/careers/OpenRoles",
+        "type": "scrape",
         "tier": 7
     },
     "de_shaw": {
@@ -780,8 +780,8 @@ AI_COMPANIES_100 = {
     "bridgewater": {
         "name": "Bridgewater Associates",
         "url": "https://www.bridgewater.com/careers",
-        "jobs_url": "https://boards.greenhouse.io/bridgewater",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/bridgewater/jobs",
+        "jobs_url": "https://boards.greenhouse.io/bridgewater89",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bridgewater89/jobs",
         "type": "api",
         "tier": 7
     },
@@ -969,13 +969,6 @@ AI_COMPANIES_100 = {
         "type": "api",
         "tier": 8
     },
-    "coinbase": {
-        "name": "Coinbase",
-        "url": "https://www.coinbase.com/careers",
-        "api_url": "https://boards-api.greenhouse.io/v1/boards/coinbase/jobs",
-        "type": "api",
-        "tier": 8
-    },
     "roblox": {
         "name": "Roblox",
         "url": "https://corp.roblox.com/careers",
@@ -1111,6 +1104,366 @@ AI_COMPANIES_100 = {
         "type": "api",
         "tier": 9
     },
+
+    # TIER 10: Healthcare & Biotech (10 companies)
+    "tempus": {
+        "name": "Tempus AI",
+        "url": "https://www.tempus.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/tempus/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "recursion": {
+        "name": "Recursion Pharmaceuticals",
+        "url": "https://www.recursion.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/recursionpharmaceuticals/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "insitro": {
+        "name": "Insitro",
+        "url": "https://insitro.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/insitro/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "flatiron": {
+        "name": "Flatiron Health",
+        "url": "https://flatiron.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/flatironhealth/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "color": {
+        "name": "Color Health",
+        "url": "https://www.color.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/color/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "veracyte": {
+        "name": "Veracyte",
+        "url": "https://www.veracyte.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/veracyte/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "grail": {
+        "name": "GRAIL",
+        "url": "https://grail.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/graboratory/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "freenome": {
+        "name": "Freenome",
+        "url": "https://www.freenome.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/freenome/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "atomwise": {
+        "name": "Atomwise",
+        "url": "https://www.atomwise.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/atomwise/jobs",
+        "type": "api",
+        "tier": 10
+    },
+    "benchling": {
+        "name": "Benchling",
+        "url": "https://www.benchling.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/benchling/jobs",
+        "type": "api",
+        "tier": 10
+    },
+
+    # TIER 11: Defense & Aerospace (10 companies)
+    "anduril": {
+        "name": "Anduril Industries",
+        "url": "https://www.anduril.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/andurilindustries/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "spacex": {
+        "name": "SpaceX",
+        "url": "https://www.spacex.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/spacex/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "relativity": {
+        "name": "Relativity Space",
+        "url": "https://www.relativityspace.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/relataboratories/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "shield_ai": {
+        "name": "Shield AI",
+        "url": "https://shield.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/shieldai/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "saronic": {
+        "name": "Saronic Technologies",
+        "url": "https://www.saronic.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/saronic/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "hadrian": {
+        "name": "Hadrian",
+        "url": "https://www.hadrian.co/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/hadrian/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "epirus": {
+        "name": "Epirus",
+        "url": "https://www.epirusinc.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/epirus/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "hermeus": {
+        "name": "Hermeus",
+        "url": "https://www.hermeus.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/hermeus/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "rocket_lab": {
+        "name": "Rocket Lab",
+        "url": "https://www.rocketlabusa.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/rocketlab/jobs",
+        "type": "api",
+        "tier": 11
+    },
+    "astra": {
+        "name": "Astra",
+        "url": "https://astra.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/aaboratories/jobs",
+        "type": "api",
+        "tier": 11
+    },
+
+    # TIER 12: E-commerce & Supply Chain (10 companies)
+    "shopify": {
+        "name": "Shopify",
+        "url": "https://www.shopify.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/shopify/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "flexport": {
+        "name": "Flexport",
+        "url": "https://www.flexport.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/flexport/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "etsy": {
+        "name": "Etsy",
+        "url": "https://careers.etsy.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/etsy/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "wayfair": {
+        "name": "Wayfair",
+        "url": "https://www.wayfair.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/wayfair/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "chewy": {
+        "name": "Chewy",
+        "url": "https://careers.chewy.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/chewycom/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "convoy": {
+        "name": "Convoy",
+        "url": "https://convoy.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/convoy/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "project44": {
+        "name": "project44",
+        "url": "https://www.project44.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/project44/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "faire": {
+        "name": "Faire",
+        "url": "https://www.faire.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/faire/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "bolt": {
+        "name": "Bolt",
+        "url": "https://www.bolt.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bolt/jobs",
+        "type": "api",
+        "tier": 12
+    },
+    "wish": {
+        "name": "Wish",
+        "url": "https://www.wish.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/wish/jobs",
+        "type": "api",
+        "tier": 12
+    },
+
+    # TIER 13: EdTech & Learning (10 companies)
+    "duolingo": {
+        "name": "Duolingo",
+        "url": "https://careers.duolingo.com",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/duolingo/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "coursera": {
+        "name": "Coursera",
+        "url": "https://about.coursera.org/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/coursera/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "khan_academy": {
+        "name": "Khan Academy",
+        "url": "https://www.khanacademy.org/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/khanacademy/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "chegg": {
+        "name": "Chegg",
+        "url": "https://www.chegg.com/jobs",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/chegg/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "quizlet": {
+        "name": "Quizlet",
+        "url": "https://quizlet.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/quizlet/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "masterclass": {
+        "name": "MasterClass",
+        "url": "https://www.masterclass.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/masterclass/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "udemy": {
+        "name": "Udemy",
+        "url": "https://about.udemy.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/udemy/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "brilliant": {
+        "name": "Brilliant",
+        "url": "https://brilliant.org/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/brilliant/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "guild": {
+        "name": "Guild Education",
+        "url": "https://www.guild.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/guild/jobs",
+        "type": "api",
+        "tier": 13
+    },
+    "outschool": {
+        "name": "Outschool",
+        "url": "https://outschool.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/outschool/jobs",
+        "type": "api",
+        "tier": 13
+    },
+
+    # TIER 14: Crypto & Web3 (ML/AI focused roles only) - 10 companies
+    "coinbase": {
+        "name": "Coinbase",
+        "url": "https://www.coinbase.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/coinbase/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "a16z_crypto": {
+        "name": "a16z Crypto",
+        "url": "https://a16zcrypto.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/a16zcrypto/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "chainalysis": {
+        "name": "Chainalysis",
+        "url": "https://www.chainalysis.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/chainalysis/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "alchemy": {
+        "name": "Alchemy",
+        "url": "https://www.alchemy.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/alchemy/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "fireblocks": {
+        "name": "Fireblocks",
+        "url": "https://www.fireblocks.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/fireblocks/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "anchorage": {
+        "name": "Anchorage Digital",
+        "url": "https://www.anchorage.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/anchorage/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "paradigm": {
+        "name": "Paradigm",
+        "url": "https://www.paradigm.xyz/opportunities",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/paradigm/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "consensys": {
+        "name": "Consensys",
+        "url": "https://consensys.io/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/consensys/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "circle": {
+        "name": "Circle",
+        "url": "https://www.circle.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/circle/jobs",
+        "type": "api",
+        "tier": 14
+    },
+    "dune": {
+        "name": "Dune Analytics",
+        "url": "https://dune.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/duneanalytics/jobs",
+        "type": "api",
+        "tier": 14
+    },
 }
 
 # Location filters for US-only jobs
@@ -1212,7 +1565,12 @@ def get_sector_for_tier(tier: int) -> str:
         6: "AI/ML",
         7: "Financial Services",
         8: "Tech",
-        9: "Gaming"
+        9: "Gaming",
+        10: "Healthcare/Biotech",
+        11: "Defense/Aerospace",
+        12: "E-commerce/Supply Chain",
+        13: "EdTech",
+        14: "Crypto/Web3"
     }
     return sector_map.get(tier, "Other")
 
@@ -1245,6 +1603,11 @@ def get_lever_companies():
     """Get companies using Lever ATS."""
     return {k: v for k, v in AI_COMPANIES_100.items()
             if "lever" in v.get("api_url", "")}
+
+def get_ashby_companies():
+    """Get companies using Ashby ATS."""
+    return {k: v for k, v in AI_COMPANIES_100.items()
+            if v.get("type") == "ashby"}
 
 def get_all_companies_count():
     """Get total count of companies."""

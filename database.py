@@ -247,6 +247,15 @@ class Database:
         self.conn.commit()
         return deleted
 
+    def reset_jobs(self):
+        """Delete all jobs, applications, and scan history."""
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM applications")
+        cursor.execute("DELETE FROM jobs")
+        cursor.execute("DELETE FROM scans")
+        self.conn.commit()
+        return cursor.execute("SELECT changes()").fetchone()[0]
+
     def get_stats(self) -> Dict[str, Any]:
         """Get database statistics."""
         cursor = self.conn.cursor()
@@ -268,7 +277,13 @@ class Database:
         """).fetchall()
         stats["by_status"] = {row["status"]: row["count"] for row in status_counts}
 
-        # Top companies
+        # Total unique companies
+        unique_companies = cursor.execute("""
+            SELECT COUNT(DISTINCT company) as count FROM jobs
+        """).fetchone()
+        stats["unique_companies"] = unique_companies["count"] if unique_companies else 0
+
+        # Top companies (for chart display)
         top_companies = cursor.execute("""
             SELECT company, COUNT(*) as count
             FROM jobs

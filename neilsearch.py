@@ -398,6 +398,30 @@ def clean(days):
 
 
 @cli.command()
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
+def reset(yes):
+    """Delete all jobs from the database."""
+    with Database() as db:
+        db.init_db()
+        stats = db.get_stats()
+
+    if stats['total_jobs'] == 0:
+        console.print("[yellow]No jobs to delete.[/yellow]")
+        return
+
+    if not yes:
+        console.print(f"\n[bold red]Warning:[/bold red] This will delete all {stats['total_jobs']} jobs, applications, and scan history.")
+        if not click.confirm("Are you sure you want to continue?"):
+            console.print("[yellow]Aborted.[/yellow]")
+            return
+
+    with Database() as db:
+        db.reset_jobs()
+
+    console.print(f"[green]Deleted all jobs and scan history. Database reset complete.[/green]")
+
+
+@cli.command()
 @click.option("--output", default="jobs.csv", help="Output CSV file path")
 @click.option("--min-score", type=float, help="Minimum match score")
 def export(output, min_score):

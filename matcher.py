@@ -37,6 +37,7 @@ class JobMatcher:
         role_score = self._score_role_fit(title, description)
         company_score = self._score_company_traits(job)
         experience_score = self._score_experience_level(title, description)
+        fresh_grad_score = self._score_fresh_grad_friendly(title, description)
 
         # Calculate total with weights
         weights = config.MATCH_WEIGHTS
@@ -44,7 +45,8 @@ class JobMatcher:
             (skills_score / 40) * weights["skills"] +
             (role_score / 30) * weights["role_fit"] +
             (company_score / 20) * weights["company_traits"] +
-            (experience_score / 10) * weights["experience_level"]
+            (experience_score / 10) * weights["experience_level"] +
+            (fresh_grad_score / 30) * weights["fresh_grad_friendly"]
         )
 
         # Add location bonus
@@ -64,6 +66,7 @@ class JobMatcher:
                 "role_fit": round(role_score, 1),
                 "company_traits": round(company_score, 1),
                 "experience_level": round(experience_score, 1),
+                "fresh_grad_friendly": round(fresh_grad_score, 1),
                 "location_bonus": location_bonus
             },
             "skills_matched": skills_matched,
@@ -255,6 +258,75 @@ class JobMatcher:
             return "entry"
         else:
             return "mid"
+
+    def _score_fresh_grad_friendly(self, title: str, description: str) -> float:
+        """Score based on how suitable the job is for fresh graduates."""
+        text = f"{title} {description}".lower()
+        score = 15  # Start with neutral score
+
+        # Strong positive indicators for fresh grads (high bonus)
+        fresh_grad_keywords = [
+            "new grad", "new graduate", "recent graduate", "fresh graduate",
+            "entry level", "entry-level", "junior", "associate",
+            "university graduate", "college graduate",
+            "0-2 years", "0-1 years", "1-2 years", "0 years",
+            "no experience required", "will train",
+            "early career", "early-career", "starting your career",
+            "rotational program", "graduate program", "new college"
+        ]
+
+        for keyword in fresh_grad_keywords:
+            if keyword in text:
+                score += 10  # Big bonus for each fresh grad indicator
+
+        # Internship converted to full-time is good
+        if "intern" in text and ("full-time" in text or "full time" in text or "convert" in text):
+            score += 8
+
+        # Moderate positive indicators
+        moderate_keywords = [
+            "mentorship", "training program", "learn", "growth opportunity",
+            "develop your skills", "bachelor", "master", "phd",
+            "recent grads welcome", "all levels"
+        ]
+
+        for keyword in moderate_keywords:
+            if keyword in text:
+                score += 3
+
+        # Negative indicators (require too much experience)
+        experience_patterns = [
+            (r"(\d+)\+?\s*years?\s*(of)?\s*(experience|exp)", -5),  # "X years experience"
+            (r"(\d+)-(\d+)\s*years", -3),  # "X-Y years"
+        ]
+
+        for pattern, penalty in experience_patterns:
+            match = re.search(pattern, text)
+            if match:
+                years = int(match.group(1))
+                if years >= 5:
+                    score -= 20  # Heavy penalty for 5+ years required
+                elif years >= 3:
+                    score -= 10  # Moderate penalty for 3-4 years
+                elif years >= 2:
+                    score -= 3   # Small penalty for 2 years
+
+        # Strong negative indicators
+        senior_keywords = [
+            "senior", "staff", "principal", "lead", "director",
+            "manager", "head of", "vp ", "vice president",
+            "extensive experience", "proven track record",
+            "10+ years", "8+ years", "7+ years", "6+ years"
+        ]
+
+        for keyword in senior_keywords:
+            if keyword in title.lower():  # Extra penalty if in title
+                score -= 15
+            elif keyword in text:
+                score -= 5
+
+        # Cap score between 0 and 30
+        return max(0, min(30, score))
 
     def _get_location_bonus(self, location: str) -> float:
         """Calculate location bonus points."""

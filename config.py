@@ -90,12 +90,13 @@ JOB_BOARDS = {
     }
 }
 
-# Matching weights
+# Matching weights (prioritized for fresh graduates)
 MATCH_WEIGHTS = {
-    "skills": 40,
-    "role_fit": 30,
-    "company_traits": 20,
-    "experience_level": 10
+    "skills": 30,
+    "role_fit": 20,
+    "company_traits": 10,
+    "experience_level": 10,
+    "fresh_grad_friendly": 30  # High weight for entry-level jobs
 }
 
 # Location bonuses

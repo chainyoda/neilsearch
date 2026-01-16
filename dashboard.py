@@ -317,7 +317,7 @@ DASHBOARD_TEMPLATE = """
             <span class="label">Showing</span>
         </div>
         <div class="stat-card">
-            <span class="value">{{ stats.top_companies|length }}</span>
+            <span class="value">{{ stats.unique_companies }}</span>
             <span class="label">Companies</span>
         </div>
     </div>
@@ -350,6 +350,18 @@ DASHBOARD_TEMPLATE = """
                     <option value="score">Match Score</option>
                     <option value="date">Date Posted</option>
                     <option value="company">Company Name</option>
+                </select>
+            </div>
+            <div>
+                <label>Company</label>
+                <select id="companyFilter">
+                    <option value="">All Companies</option>
+                </select>
+            </div>
+            <div>
+                <label>Sector</label>
+                <select id="sectorFilter">
+                    <option value="">All Sectors</option>
                 </select>
             </div>
         </div>
@@ -479,17 +491,47 @@ DASHBOARD_TEMPLATE = """
             alert(`Status updated to: ${status}\\nNote: This is a demo. Status updates aren't persisted in this version.`);
         }
 
+        // Populate company dropdown
+        function populateCompanyDropdown() {
+            const companies = [...new Set(jobsData.map(job => job.company))].sort();
+            const dropdown = document.getElementById('companyFilter');
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company;
+                option.textContent = company;
+                dropdown.appendChild(option);
+            });
+        }
+        populateCompanyDropdown();
+
+        // Populate sector dropdown
+        function populateSectorDropdown() {
+            const sectors = [...new Set(jobsData.map(job => job.sector || 'Other'))].sort();
+            const dropdown = document.getElementById('sectorFilter');
+            sectors.forEach(sector => {
+                const option = document.createElement('option');
+                option.value = sector;
+                option.textContent = sector;
+                dropdown.appendChild(option);
+            });
+        }
+        populateSectorDropdown();
+
         // Filtering and sorting
         function filterAndSortJobs() {
             const minScore = parseInt(document.getElementById('minScore').value);
             const searchText = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
             const sortBy = document.getElementById('sortBy').value;
+            const companyFilter = document.getElementById('companyFilter').value;
+            const sectorFilter = document.getElementById('sectorFilter').value;
 
             let filtered = jobsData.filter(job => {
                 if (job.match_score < minScore) return false;
                 if (searchText && !JSON.stringify(job).toLowerCase().includes(searchText)) return false;
                 if (statusFilter && job.app_status !== statusFilter) return false;
+                if (companyFilter && job.company !== companyFilter) return false;
+                if (sectorFilter && job.sector !== sectorFilter) return false;
                 return true;
             });
 
@@ -513,6 +555,8 @@ DASHBOARD_TEMPLATE = """
         document.getElementById('searchInput').addEventListener('input', filterAndSortJobs);
         document.getElementById('statusFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('sortBy').addEventListener('change', filterAndSortJobs);
+        document.getElementById('companyFilter').addEventListener('change', filterAndSortJobs);
+        document.getElementById('sectorFilter').addEventListener('change', filterAndSortJobs);
 
         // Initial render
         renderJobs(jobsData);
@@ -589,7 +633,8 @@ def generate_dashboard(jobs: List[Dict], stats: Dict, profile: Dict) -> str:
             "skills_missing": job.get("skills_missing", []),
             "match_breakdown": job.get("match_breakdown", {}),
             "app_status": job.get("app_status", ""),
-            "scraped_date": job["scraped_date"]
+            "scraped_date": job["scraped_date"],
+            "sector": job.get("sector", "Other")
         }
         jobs_for_json.append(job_data)
 
