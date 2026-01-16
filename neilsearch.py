@@ -222,6 +222,106 @@ def scan_companies(companies, tier, top):
     console.print("\n[yellow]Next step:[/yellow] Run 'python neilsearch.py dashboard' to view all jobs!")
 
 
+@cli.command("scan-consulting")
+def scan_consulting():
+    """Scan consulting firms for ML/AI jobs using JobSpy (Indeed, LinkedIn, Glassdoor)."""
+    console.print("\n[bold blue]Starting consulting company scan via JobSpy...[/bold blue]\n")
+    console.print("[dim]This scrapes Indeed, LinkedIn, and Glassdoor for ML/AI jobs at consulting firms.[/dim]\n")
+
+    # Check if profile exists
+    with Database() as db:
+        db.init_db()
+        profile_data = db.get_profile()
+
+        if not profile_data:
+            console.print("[bold red]Error:[/bold red] No profile found. Run 'python neilsearch.py profile --resume <path>' first.")
+            sys.exit(1)
+
+        console.print(f"[green]Using profile from:[/green] {profile_data['resume_path']}\n")
+
+    start_time = time.time()
+
+    # Import JobSpy scraper
+    try:
+        from company_scrapers import scrape_consulting_jobs
+    except ImportError as e:
+        console.print(f"[bold red]Error:[/bold red] Could not import consulting scraper: {e}")
+        sys.exit(1)
+
+    # Scrape consulting jobs
+    console.print("[bold]Searching consulting companies for ML/AI roles...[/bold]\n")
+    jobs = scrape_consulting_jobs()
+
+    console.print(f"\n[green]Total ML/AI jobs found:[/green] {len(jobs)}")
+
+    if not jobs:
+        console.print("[yellow]No jobs found. Try again later or check JobSpy installation.[/yellow]")
+        return
+
+    # Match jobs against profile
+    console.print("\n[bold]Matching jobs against profile...[/bold]")
+    matcher = JobMatcher(profile_data['profile_data'])
+
+    new_jobs = 0
+    duplicates = 0
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console
+    ) as progress:
+        task = progress.add_task("Processing jobs...", total=len(jobs))
+
+        with Database() as db:
+            for job in jobs:
+                # Match job
+                match_result = matcher.match_job(job)
+
+                # Add match results to job data
+                job.update(match_result)
+
+                # Save to database
+                is_new = db.save_job(job)
+                if is_new:
+                    new_jobs += 1
+                else:
+                    duplicates += 1
+
+                progress.update(task, advance=1)
+
+            # Save scan history
+            duration = time.time() - start_time
+            db.save_scan_history(new_jobs, 14, duration)  # 14 consulting companies
+
+    # Display results
+    console.print(f"\n[bold green]Consulting scan complete![/bold green]")
+    console.print(f"[green]New jobs:[/green] {new_jobs}")
+    console.print(f"[yellow]Duplicate jobs removed:[/yellow] {duplicates}")
+    console.print(f"[blue]Duration:[/blue] {duration:.1f}s\n")
+
+    # Show top matches
+    if new_jobs > 0:
+        with Database() as db:
+            top_jobs = db.get_jobs(min_score=50)[:5]
+
+        if top_jobs:
+            console.print("[bold]Top consulting matches:[/bold]\n")
+
+            table = Table(show_header=True, header_style="bold magenta", box=box.SIMPLE)
+            table.add_column("Score", style="cyan", width=6)
+            table.add_column("Title", style="white", width=35)
+            table.add_column("Company", style="green", width=20)
+            table.add_column("Location", style="blue", width=15)
+
+            for job in top_jobs:
+                score = f"{job['match_score']:.0f}"
+                table.add_row(score, job['title'][:35], job['company'][:20], job['location'][:15])
+
+            console.print(table)
+
+    console.print("\n[yellow]Next step:[/yellow] Run 'python neilsearch.py dashboard' to view all jobs!")
+
+
 @cli.command("list-companies")
 def list_companies():
     """List all available AI companies that can be scraped."""

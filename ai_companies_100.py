@@ -1464,6 +1464,604 @@ AI_COMPANIES_100 = {
         "type": "api",
         "tier": 14
     },
+
+    # TIER 15: Research Labs, Universities & AI Safety (ML Internships) - 30 institutions
+    "allen_ai": {
+        "name": "Allen Institute for AI (AI2)",
+        "url": "https://allenai.org/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/thealleninstitute/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "toyota_research": {
+        "name": "Toyota Research Institute",
+        "url": "https://www.tri.global/careers",
+        "api_url": "https://api.lever.co/v0/postings/tri",
+        "type": "api",
+        "tier": 15
+    },
+    "microsoft_research": {
+        "name": "Microsoft Research",
+        "url": "https://www.microsoft.com/en-us/research/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/microsoftresearch/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "nvidia_research": {
+        "name": "NVIDIA Research",
+        "url": "https://www.nvidia.com/en-us/research/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/nvidia/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "salesforce_research": {
+        "name": "Salesforce Research",
+        "url": "https://www.salesforceairesearch.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/salesforce/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "ibm_research": {
+        "name": "IBM Research",
+        "url": "https://research.ibm.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/ibm/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "adobe_research": {
+        "name": "Adobe Research",
+        "url": "https://research.adobe.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/adobe/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "baidu_research": {
+        "name": "Baidu Research",
+        "url": "https://research.baidu.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/baidu/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "samsung_research": {
+        "name": "Samsung Research America",
+        "url": "https://www.sra.samsung.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/samsungresearchamerica/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "bosch_ai": {
+        "name": "Bosch AI Center",
+        "url": "https://www.bosch-ai.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/boschai/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    # Universities and Academic AI Research Institutes
+    "mila": {
+        "name": "Mila - Quebec AI Institute",
+        "url": "https://mila.quebec/en/careers",
+        "api_url": "https://api.lever.co/v0/postings/maboratoire",
+        "type": "api",
+        "tier": 15
+    },
+    "vector_institute": {
+        "name": "Vector Institute",
+        "url": "https://vectorinstitute.ai/careers/",
+        "api_url": "https://api.lever.co/v0/postings/vectorinstitute",
+        "type": "api",
+        "tier": 15
+    },
+    "berkeley_ai": {
+        "name": "UC Berkeley AI Research (BAIR)",
+        "url": "https://bair.berkeley.edu/positions.html",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/ucberkeley/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "stanford_hai": {
+        "name": "Stanford HAI",
+        "url": "https://hai.stanford.edu/about/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/stanforduniversity/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "mit_csail": {
+        "name": "MIT CSAIL",
+        "url": "https://www.csail.mit.edu/about/jobs",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/mitcsail/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "cmu_ml": {
+        "name": "Carnegie Mellon ML Department",
+        "url": "https://www.ml.cmu.edu/people/jobs.html",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cmu/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "google_deepmind": {
+        "name": "Google DeepMind",
+        "url": "https://deepmind.google/about/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/deepmind/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "meta_fair": {
+        "name": "Meta FAIR (AI Research)",
+        "url": "https://ai.meta.com/research/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/meta/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "redwood_research": {
+        "name": "Redwood Research",
+        "url": "https://www.redwoodresearch.org/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/redwoodresearch",
+        "type": "ashby",
+        "tier": 15
+    },
+    "eleuther_ai": {
+        "name": "EleutherAI",
+        "url": "https://www.eleuther.ai/get-involved",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/eleutherai/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "georgia_tech_ml": {
+        "name": "Georgia Tech ML Center",
+        "url": "https://ml.gatech.edu/jobs",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/georgiatech/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "uw_ai": {
+        "name": "University of Washington AI Lab",
+        "url": "https://www.cs.washington.edu/research/ai",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/uwashington/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "princeton_ai": {
+        "name": "Princeton AI Research",
+        "url": "https://aiml.princeton.edu/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/princeton/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "cornell_ai": {
+        "name": "Cornell AI Research",
+        "url": "https://www.cs.cornell.edu/research/ai",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cornell/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "uiuc_ai": {
+        "name": "UIUC AI Research",
+        "url": "https://cs.illinois.edu/research/areas/artificial-intelligence",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/uiuc/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "umich_ai": {
+        "name": "University of Michigan AI Lab",
+        "url": "https://ai.engin.umich.edu/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/umich/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "caltech_ai": {
+        "name": "Caltech AI Research",
+        "url": "https://www.cms.caltech.edu/research",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/caltech/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "oxford_ai": {
+        "name": "Oxford Machine Learning Research",
+        "url": "https://www.cs.ox.ac.uk/research/ml/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/oxford/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "cambridge_ai": {
+        "name": "Cambridge ML Group",
+        "url": "https://mlg.eng.cam.ac.uk/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cambridge/jobs",
+        "type": "api",
+        "tier": 15
+    },
+    "eth_zurich_ai": {
+        "name": "ETH Zurich AI Center",
+        "url": "https://ai.ethz.ch/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/ethzurich/jobs",
+        "type": "api",
+        "tier": 15
+    },
+
+    # TIER 16: Semiconductor/Chip/GPU/TPU Companies - 20 companies
+    "nvidia": {
+        "name": "NVIDIA",
+        "url": "https://www.nvidia.com/en-us/about-nvidia/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/nvidia/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "amd": {
+        "name": "AMD",
+        "url": "https://www.amd.com/en/corporate/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/amd/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "intel": {
+        "name": "Intel",
+        "url": "https://www.intel.com/content/www/us/en/jobs/jobs-at-intel.html",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/intel/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "qualcomm": {
+        "name": "Qualcomm",
+        "url": "https://www.qualcomm.com/company/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/qualcomm/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "broadcom": {
+        "name": "Broadcom",
+        "url": "https://www.broadcom.com/company/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/broadcom/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "marvell": {
+        "name": "Marvell",
+        "url": "https://www.marvell.com/company/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/marvell/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "cerebras": {
+        "name": "Cerebras Systems",
+        "url": "https://www.cerebras.net/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/cerebaboratories/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "groq": {
+        "name": "Groq",
+        "url": "https://groq.com/careers/",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/groq",
+        "type": "ashby",
+        "tier": 16
+    },
+    "sambanova": {
+        "name": "SambaNova Systems",
+        "url": "https://sambanova.ai/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/sambanovasystems/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "graphcore": {
+        "name": "Graphcore",
+        "url": "https://www.graphcore.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/graphcore/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "tenstorrent": {
+        "name": "Tenstorrent",
+        "url": "https://tenstorrent.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/tenstorrent/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "mythic": {
+        "name": "Mythic",
+        "url": "https://www.mythic-ai.com/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/mythic/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "hailo": {
+        "name": "Hailo",
+        "url": "https://hailo.ai/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/hailo/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "esperanto": {
+        "name": "Esperanto Technologies",
+        "url": "https://www.esperanto.ai/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/esperantotechnologies/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "etched": {
+        "name": "Etched",
+        "url": "https://www.etched.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/etched/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "rain_neuromorphic": {
+        "name": "Rain AI",
+        "url": "https://rain.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/rain/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "lightmatter": {
+        "name": "Lightmatter",
+        "url": "https://lightmatter.co/careers/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/lightmatter/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "rebellions": {
+        "name": "Rebellions",
+        "url": "https://rebellions.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/rebellions/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "d_matrix": {
+        "name": "d-Matrix",
+        "url": "https://www.d-matrix.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/dmatrix/jobs",
+        "type": "api",
+        "tier": 16
+    },
+    "furiosa": {
+        "name": "FuriosaAI",
+        "url": "https://furiosa.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/furiosa/jobs",
+        "type": "api",
+        "tier": 16
+    },
+
+    # TIER 17: YC Startups (AI/ML focused) - 20 companies
+    "langchain_yc": {
+        "name": "LangChain",
+        "url": "https://www.langchain.com/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/langchain",
+        "type": "ashby",
+        "tier": 17
+    },
+    "browserbase_yc": {
+        "name": "Browserbase",
+        "url": "https://www.browserbase.com/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/browserbase",
+        "type": "ashby",
+        "tier": 17
+    },
+    "modal_yc": {
+        "name": "Modal",
+        "url": "https://modal.com/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/modal",
+        "type": "ashby",
+        "tier": 17
+    },
+    "perplexity_yc": {
+        "name": "Perplexity AI",
+        "url": "https://www.perplexity.ai/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/perplexityai",
+        "type": "ashby",
+        "tier": 17
+    },
+    "anysphere_yc": {
+        "name": "Anysphere (Cursor)",
+        "url": "https://anysphere.inc/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/anysphere",
+        "type": "ashby",
+        "tier": 17
+    },
+    "pika_yc": {
+        "name": "Pika Labs",
+        "url": "https://pika.art/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/pika",
+        "type": "ashby",
+        "tier": 17
+    },
+    "ideogram_yc": {
+        "name": "Ideogram",
+        "url": "https://ideogram.ai/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/ideogram",
+        "type": "ashby",
+        "tier": 17
+    },
+    "replicate_yc": {
+        "name": "Replicate",
+        "url": "https://replicate.com/about",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/replicate",
+        "type": "ashby",
+        "tier": 17
+    },
+    "weights_biases_yc": {
+        "name": "Weights & Biases",
+        "url": "https://wandb.ai/careers",
+        "api_url": "https://api.ashbyhq.com/posting-api/job-board/wandb",
+        "type": "ashby",
+        "tier": 17
+    },
+    "together_ai": {
+        "name": "Together AI",
+        "url": "https://www.together.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/togetherai/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "anyscale": {
+        "name": "Anyscale",
+        "url": "https://www.anyscale.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/anyscale/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "humanloop": {
+        "name": "Humanloop",
+        "url": "https://humanloop.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/humanloop/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "helicone": {
+        "name": "Helicone",
+        "url": "https://www.helicone.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/helicone/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "baseten": {
+        "name": "Baseten",
+        "url": "https://www.baseten.co/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/baseten/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "codium": {
+        "name": "CodiumAI",
+        "url": "https://www.codium.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/codiumai/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "e2b": {
+        "name": "E2B",
+        "url": "https://e2b.dev/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/e2b/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "lmnt": {
+        "name": "LMNT",
+        "url": "https://lmnt.com/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/lmnt/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "vapi": {
+        "name": "Vapi",
+        "url": "https://vapi.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/vapi/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "mem0": {
+        "name": "Mem0",
+        "url": "https://mem0.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/mem0/jobs",
+        "type": "api",
+        "tier": 17
+    },
+    "multion": {
+        "name": "MultiOn",
+        "url": "https://www.multion.ai/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/multion/jobs",
+        "type": "api",
+        "tier": 17
+    },
+
+    # TIER 18: Consulting Companies (AI/ML Practices) - 15 companies
+    # Note: Most large consultancies use Workday/Taleo. Including AI-focused boutiques with APIs.
+    "quantumblack": {
+        "name": "QuantumBlack (McKinsey)",
+        "url": "https://www.mckinsey.com/capabilities/quantumblack/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/quantumblack/jobs",
+        "type": "api",
+        "tier": 18
+    },
+    "bcg_x": {
+        "name": "BCG X (BCG Tech)",
+        "url": "https://www.bcg.com/x/careers",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bcgx/jobs",
+        "type": "api",
+        "tier": 18
+    },
+    "bain_vector": {
+        "name": "Bain Vector (Bain Analytics)",
+        "url": "https://www.bain.com/vector-digital/",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/bainvector/jobs",
+        "type": "api",
+        "tier": 18
+    },
+    "palantir": {
+        "name": "Palantir Technologies",
+        "url": "https://www.palantir.com/careers/",
+        "api_url": "https://api.lever.co/v0/postings/palantir",
+        "type": "api",
+        "tier": 18
+    },
+    "mckinsey": {
+        "name": "McKinsey & Company",
+        "url": "https://www.mckinsey.com/careers",
+        "jobs_url": "https://www.mckinsey.com/careers/search-jobs",
+        "type": "scrape",
+        "tier": 18
+    },
+    "bcg": {
+        "name": "Boston Consulting Group (BCG)",
+        "url": "https://careers.bcg.com/",
+        "jobs_url": "https://careers.bcg.com/job-search",
+        "type": "scrape",
+        "tier": 18
+    },
+    "bain": {
+        "name": "Bain & Company",
+        "url": "https://www.bain.com/careers/",
+        "jobs_url": "https://www.bain.com/careers/find-a-role/",
+        "type": "scrape",
+        "tier": 18
+    },
+    "deloitte": {
+        "name": "Deloitte",
+        "url": "https://www.deloitte.com/careers",
+        "jobs_url": "https://apply.deloitte.com/careers/SearchJobs",
+        "type": "scrape",
+        "tier": 18
+    },
+    "pwc": {
+        "name": "PwC",
+        "url": "https://www.pwc.com/gx/en/careers.html",
+        "jobs_url": "https://www.pwc.com/gx/en/careers/search-jobs.html",
+        "type": "scrape",
+        "tier": 18
+    },
+    "ey": {
+        "name": "Ernst & Young (EY)",
+        "url": "https://www.ey.com/en_us/careers",
+        "jobs_url": "https://eyglobal.yello.co/jobs",
+        "type": "scrape",
+        "tier": 18
+    },
+    "kpmg": {
+        "name": "KPMG",
+        "url": "https://www.kpmg.us/careers.html",
+        "jobs_url": "https://www.kpmguscareers.com/search-jobs",
+        "type": "scrape",
+        "tier": 18
+    },
+    "accenture": {
+        "name": "Accenture",
+        "url": "https://www.accenture.com/us-en/careers",
+        "jobs_url": "https://www.accenture.com/us-en/careers/jobsearch",
+        "type": "scrape",
+        "tier": 18
+    },
+    "booz_allen": {
+        "name": "Booz Allen Hamilton",
+        "url": "https://www.boozallen.com/careers.html",
+        "api_url": "https://boards-api.greenhouse.io/v1/boards/boozallen/jobs",
+        "type": "api",
+        "tier": 18
+    },
+    "oliver_wyman": {
+        "name": "Oliver Wyman",
+        "url": "https://www.oliverwyman.com/careers.html",
+        "api_url": "https://api.lever.co/v0/postings/oliverwyman",
+        "type": "api",
+        "tier": 18
+    },
 }
 
 # Location filters for US-only jobs
@@ -1499,12 +2097,14 @@ US_LOCATIONS = [
     "work from home", "wfh", "distributed",
 
     # US Generic
-    "united states", "usa", "us", "u.s."
+    "united states", "usa", "us", "u.s.",
+
+    # UK/London
+    "london", "uk", "united kingdom", "england"
 ]
 
 # Locations to EXCLUDE (international)
 EXCLUDED_LOCATIONS = [
-    "london", "uk", "united kingdom", "england",
     "berlin", "germany", "munich", "hamburg",
     "paris", "france",
     "amsterdam", "netherlands",
@@ -1570,7 +2170,11 @@ def get_sector_for_tier(tier: int) -> str:
         11: "Defense/Aerospace",
         12: "E-commerce/Supply Chain",
         13: "EdTech",
-        14: "Crypto/Web3"
+        14: "Crypto/Web3",
+        15: "Research/Academia",
+        16: "Semiconductor/Hardware",
+        17: "YC Startups",
+        18: "Consulting"
     }
     return sector_map.get(tier, "Other")
 

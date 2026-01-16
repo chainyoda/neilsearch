@@ -300,24 +300,24 @@ DASHBOARD_TEMPLATE = """
 <body>
     <div class="header">
         <h1>NeilSearch Dashboard</h1>
-        <div class="subtitle">AI/ML Jobs in San Francisco</div>
+        <div class="subtitle" id="header-subtitle">All Jobs</div>
     </div>
 
     <div class="stats-grid">
         <div class="stat-card">
-            <span class="value">{{ stats.total_jobs }}</span>
+            <span class="value" id="stat-total-jobs">{{ stats.total_jobs }}</span>
             <span class="label">Total Jobs</span>
         </div>
         <div class="stat-card">
-            <span class="value">{{ stats.avg_match_score }}</span>
+            <span class="value" id="stat-avg-score">{{ stats.avg_match_score }}</span>
             <span class="label">Avg Match Score</span>
         </div>
         <div class="stat-card">
-            <span class="value" id="filtered-count">{{ stats.total_jobs }}</span>
+            <span class="value" id="stat-showing">{{ stats.total_jobs }}</span>
             <span class="label">Showing</span>
         </div>
         <div class="stat-card">
-            <span class="value">{{ stats.unique_companies }}</span>
+            <span class="value" id="stat-companies">{{ stats.unique_companies }}</span>
             <span class="label">Companies</span>
         </div>
     </div>
@@ -364,6 +364,12 @@ DASHBOARD_TEMPLATE = """
                     <option value="">All Sectors</option>
                 </select>
             </div>
+            <div>
+                <label>Location</label>
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -390,6 +396,114 @@ DASHBOARD_TEMPLATE = """
     <script>
         const jobsData = {{ jobs_json|safe }};
         const statsData = {{ stats_json|safe }};
+
+        // Chart instances (for updating) - use var for global scope
+        var companiesChart = null;
+        var scoresChart = null;
+
+        // Update stats based on filtered jobs
+        function updateStats(filteredJobs) {
+            console.log('updateStats called with', filteredJobs.length, 'jobs');
+            try {
+                // Update showing count
+                document.getElementById('stat-showing').textContent = filteredJobs.length;
+
+                // Update total jobs (filtered)
+                document.getElementById('stat-total-jobs').textContent = filteredJobs.length;
+
+                // Update average score
+                if (filteredJobs.length > 0) {
+                    const avgScore = filteredJobs.reduce((sum, job) => sum + (job.match_score || 0), 0) / filteredJobs.length;
+                    document.getElementById('stat-avg-score').textContent = avgScore.toFixed(1);
+                } else {
+                    document.getElementById('stat-avg-score').textContent = '0';
+                }
+
+                // Update unique companies count
+                const uniqueCompanies = new Set(filteredJobs.map(job => job.company).filter(c => c)).size;
+                document.getElementById('stat-companies').textContent = uniqueCompanies;
+            } catch (err) {
+                console.error('Error updating stats:', err);
+            }
+        }
+
+        // Update charts based on filtered jobs
+        function updateCharts(filteredJobs) {
+            console.log('updateCharts called with', filteredJobs.length, 'jobs');
+            console.log('companiesChart exists:', !!companiesChart);
+            console.log('scoresChart exists:', !!scoresChart);
+            try {
+                // Update companies chart
+                const companyCounts = {};
+                filteredJobs.forEach(job => {
+                    if (job && job.company) {
+                        companyCounts[job.company] = (companyCounts[job.company] || 0) + 1;
+                    }
+                });
+                const sortedCompanies = Object.entries(companyCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 10);
+
+                if (companiesChart) {
+                    companiesChart.data.labels = sortedCompanies.length > 0 ? sortedCompanies.map(c => c[0]) : ['No data'];
+                    companiesChart.data.datasets[0].data = sortedCompanies.length > 0 ? sortedCompanies.map(c => c[1]) : [0];
+                    companiesChart.update();
+                }
+
+                // Update score distribution chart
+                const scoreRanges = { '0-60': 0, '60-80': 0, '80-100': 0 };
+                filteredJobs.forEach(job => {
+                    if (job && typeof job.match_score === 'number') {
+                        if (job.match_score < 60) scoreRanges['0-60']++;
+                        else if (job.match_score < 80) scoreRanges['60-80']++;
+                        else scoreRanges['80-100']++;
+                    }
+                });
+
+                if (scoresChart) {
+                    scoresChart.data.datasets[0].data = [scoreRanges['0-60'], scoreRanges['60-80'], scoreRanges['80-100']];
+                    scoresChart.update();
+                }
+            } catch (err) {
+                console.error('Error updating charts:', err);
+            }
+        }
+
+        // Update header subtitle based on current filters
+        function updateSubtitle() {
+            const sectorFilter = document.getElementById('sectorFilter').value;
+            const companyFilter = document.getElementById('companyFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+
+            let parts = [];
+
+            // Sector or default "Jobs"
+            if (sectorFilter) {
+                parts.push(sectorFilter + ' Jobs');
+            } else {
+                parts.push('Jobs');
+            }
+
+            // Company
+            if (companyFilter) {
+                parts.push('at ' + companyFilter);
+            }
+
+            // Location
+            if (locationFilter) {
+                parts.push('in ' + locationFilter);
+            }
+
+            // Build the sentence
+            let subtitle = parts.join(' ');
+
+            // If no filters, show "All Jobs"
+            if (!sectorFilter && !companyFilter && !locationFilter) {
+                subtitle = 'All Jobs';
+            }
+
+            document.getElementById('header-subtitle').textContent = subtitle;
+        }
 
         // Render jobs
         function renderJobs(jobs) {
@@ -476,8 +590,6 @@ DASHBOARD_TEMPLATE = """
                     </div>
                 `;
             }).join('');
-
-            document.getElementById('filtered-count').textContent = jobs.length;
         }
 
         function toggleDetails(jobId) {
@@ -517,6 +629,31 @@ DASHBOARD_TEMPLATE = """
         }
         populateSectorDropdown();
 
+        // Populate location dropdown - extract individual cities from multi-location jobs
+        function populateLocationDropdown() {
+            const allCities = new Set();
+            jobsData.forEach(job => {
+                const location = job.location || '';
+                // Split on "; " to get individual cities from multi-location jobs
+                const cities = location.split('; ');
+                cities.forEach(city => {
+                    if (city && city.trim()) {
+                        allCities.add(city.trim());
+                    }
+                });
+            });
+
+            const sortedCities = [...allCities].sort();
+            const dropdown = document.getElementById('locationFilter');
+            sortedCities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                dropdown.appendChild(option);
+            });
+        }
+        populateLocationDropdown();
+
         // Filtering and sorting
         function filterAndSortJobs() {
             const minScore = parseInt(document.getElementById('minScore').value);
@@ -525,6 +662,7 @@ DASHBOARD_TEMPLATE = """
             const sortBy = document.getElementById('sortBy').value;
             const companyFilter = document.getElementById('companyFilter').value;
             const sectorFilter = document.getElementById('sectorFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
 
             let filtered = jobsData.filter(job => {
                 if (job.match_score < minScore) return false;
@@ -532,6 +670,12 @@ DASHBOARD_TEMPLATE = """
                 if (statusFilter && job.app_status !== statusFilter) return false;
                 if (companyFilter && job.company !== companyFilter) return false;
                 if (sectorFilter && job.sector !== sectorFilter) return false;
+                // Location filter: check if selected city is in the job's location
+                // This handles multi-location jobs like "NYC; San Francisco; Seattle"
+                if (locationFilter) {
+                    const jobLocations = (job.location || '').split('; ');
+                    if (!jobLocations.includes(locationFilter)) return false;
+                }
                 return true;
             });
 
@@ -543,7 +687,12 @@ DASHBOARD_TEMPLATE = """
                 return 0;
             });
 
+            console.log('Filtered to', filtered.length, 'jobs');
             renderJobs(filtered);
+            updateStats(filtered);
+            updateCharts(filtered);
+            updateSubtitle();
+            console.log('Filter complete');
         }
 
         // Event listeners
@@ -557,19 +706,26 @@ DASHBOARD_TEMPLATE = """
         document.getElementById('sortBy').addEventListener('change', filterAndSortJobs);
         document.getElementById('companyFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('sectorFilter').addEventListener('change', filterAndSortJobs);
+        document.getElementById('locationFilter').addEventListener('change', filterAndSortJobs);
 
-        // Initial render
-        renderJobs(jobsData);
+        // Initialize Charts FIRST (before any filtering)
+        // Companies chart
+        function initCompaniesChart(jobs) {
+            const companyCounts = {};
+            jobs.forEach(job => {
+                companyCounts[job.company] = (companyCounts[job.company] || 0) + 1;
+            });
+            const sortedCompanies = Object.entries(companyCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
 
-        // Charts
-        if (statsData.top_companies && statsData.top_companies.length > 0) {
-            new Chart(document.getElementById('companiesChart'), {
+            return new Chart(document.getElementById('companiesChart'), {
                 type: 'bar',
                 data: {
-                    labels: statsData.top_companies.slice(0, 10).map(c => c.company),
+                    labels: sortedCompanies.map(c => c[0]),
                     datasets: [{
                         label: 'Job Postings',
-                        data: statsData.top_companies.slice(0, 10).map(c => c.count),
+                        data: sortedCompanies.map(c => c[1]),
                         backgroundColor: '#667eea'
                     }]
                 },
@@ -583,31 +739,40 @@ DASHBOARD_TEMPLATE = """
             });
         }
 
-        // Score distribution chart
-        const scoreRanges = { '0-60': 0, '60-80': 0, '80-100': 0 };
-        jobsData.forEach(job => {
-            if (job.match_score < 60) scoreRanges['0-60']++;
-            else if (job.match_score < 80) scoreRanges['60-80']++;
-            else scoreRanges['80-100']++;
-        });
+        function initScoresChart(jobs) {
+            const scoreRanges = { '0-60': 0, '60-80': 0, '80-100': 0 };
+            jobs.forEach(job => {
+                if (job.match_score < 60) scoreRanges['0-60']++;
+                else if (job.match_score < 80) scoreRanges['60-80']++;
+                else scoreRanges['80-100']++;
+            });
 
-        new Chart(document.getElementById('scoresChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['0-60 (Low)', '60-80 (Medium)', '80-100 (High)'],
-                datasets: [{
-                    data: [scoreRanges['0-60'], scoreRanges['60-80'], scoreRanges['80-100']],
-                    backgroundColor: ['#95a5a6', '#f39c12', '#2ecc71']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: { display: true, text: 'Match Score Distribution' }
+            return new Chart(document.getElementById('scoresChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['0-60 (Low)', '60-80 (Medium)', '80-100 (High)'],
+                    datasets: [{
+                        data: [scoreRanges['0-60'], scoreRanges['60-80'], scoreRanges['80-100']],
+                        backgroundColor: ['#95a5a6', '#f39c12', '#2ecc71']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Match Score Distribution' }
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        // Initialize charts with all data
+        companiesChart = initCompaniesChart(jobsData);
+        scoresChart = initScoresChart(jobsData);
+
+        // Initial render
+        renderJobs(jobsData);
+        updateStats(jobsData);
     </script>
 </body>
 </html>

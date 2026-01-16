@@ -23,6 +23,11 @@ TARGET_LOCATIONS = [
     "San Francisco",
     "SF",
     "Bay Area",
+    "London",
+    "London, UK",
+    "London, England",
+    "United Kingdom",
+    "UK",
     "Remote"
 ]
 
@@ -103,6 +108,8 @@ MATCH_WEIGHTS = {
 LOCATION_BONUS = {
     "san_francisco": 5,
     "bay_area": 3,
+    "london": 5,
+    "uk": 3,
     "remote": 2
 }
 

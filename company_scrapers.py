@@ -399,3 +399,124 @@ def scrape_ai_companies(company_keys: Optional[List[str]] = None) -> List[Dict]:
     """
     manager = CompanyScraperManager()
     return manager.scrape_all_companies(company_keys)
+
+
+class JobSpyAggregatorScraper:
+    """
+    Scraper that uses JobSpy to aggregate jobs from LinkedIn, Indeed, Glassdoor, etc.
+    Great for companies that don't have public ATS APIs (like consulting firms).
+    """
+
+    # Consulting companies to search for
+    CONSULTING_COMPANIES = [
+        "McKinsey",
+        "BCG",
+        "Boston Consulting Group",
+        "Bain & Company",
+        "Deloitte",
+        "PwC",
+        "EY",
+        "Ernst & Young",
+        "KPMG",
+        "Accenture",
+        "Booz Allen",
+        "Oliver Wyman",
+        "Kearney",
+        "Capgemini",
+    ]
+
+    # ML/AI job search terms
+    ML_SEARCH_TERMS = [
+        "machine learning",
+        "data scientist",
+        "AI engineer",
+        "artificial intelligence",
+    ]
+
+    def __init__(self):
+        self.name = "JobSpy Aggregator"
+
+    def scrape_consulting_ml_jobs(self, results_wanted: int = 50) -> List[Dict]:
+        """
+        Scrape ML/AI jobs from consulting companies using JobSpy.
+
+        Args:
+            results_wanted: Number of results per search
+
+        Returns:
+            List of job dictionaries
+        """
+        try:
+            from jobspy import scrape_jobs
+        except ImportError:
+            print("  JobSpy not installed. Run: pip install python-jobspy")
+            return []
+
+        all_jobs = []
+        seen_urls = set()
+
+        # Search for ML jobs at consulting companies
+        for company in self.CONSULTING_COMPANIES:
+            for search_term in self.ML_SEARCH_TERMS[:2]:  # Limit searches
+                try:
+                    print(f"  Searching {company} for '{search_term}'...")
+
+                    jobs_df = scrape_jobs(
+                        site_name=["indeed", "linkedin", "glassdoor"],
+                        search_term=f"{search_term} {company}",
+                        location="United States",
+                        results_wanted=min(results_wanted, 20),
+                        hours_old=168,  # Last 7 days
+                        country_indeed="USA",
+                    )
+
+                    if jobs_df is not None and len(jobs_df) > 0:
+                        for _, row in jobs_df.iterrows():
+                            job_url = str(row.get("job_url", ""))
+
+                            # Skip duplicates
+                            if job_url in seen_urls:
+                                continue
+                            seen_urls.add(job_url)
+
+                            title = str(row.get("title", ""))
+                            description = str(row.get("description", ""))
+
+                            # Filter for ML/AI roles only
+                            if not is_ml_ai_role(title, description):
+                                continue
+
+                            # Generate unique ID from URL
+                            import hashlib
+                            job_id = hashlib.md5(job_url.encode()).hexdigest()
+
+                            job = {
+                                "id": job_id,
+                                "title": title,
+                                "company": str(row.get("company", company)),
+                                "location": str(row.get("location", "United States")),
+                                "url": job_url,
+                                "description": description[:5000] if description else "",
+                                "posted_date": str(row.get("date_posted", "")),
+                                "scraped_date": datetime.now().isoformat(),
+                                "board_name": f"JobSpy ({row.get('site', 'aggregator')})",
+                                "sector": "Consulting",
+                            }
+                            all_jobs.append(job)
+
+                        print(f"    Found {len(jobs_df)} jobs, {len(all_jobs)} ML/AI roles total")
+
+                    time.sleep(2)  # Rate limiting
+
+                except Exception as e:
+                    print(f"    Error searching {company}: {str(e)[:100]}")
+                    continue
+
+        print(f"  Total ML/AI consulting jobs found: {len(all_jobs)}")
+        return all_jobs
+
+
+def scrape_consulting_jobs() -> List[Dict]:
+    """Convenience function to scrape consulting ML/AI jobs using JobSpy."""
+    scraper = JobSpyAggregatorScraper()
+    return scraper.scrape_consulting_ml_jobs()

@@ -1,10 +1,270 @@
 """Database operations for NeilSearch."""
 import sqlite3
 import json
+import re
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import config
+
+
+# Simple city name mappings (no state/country suffixes)
+CITY_NORMALIZATIONS = {
+    # NYC variations
+    "new york": "NYC",
+    "new york city": "NYC",
+    "nyc": "NYC",
+    "ny": "NYC",
+    "manhattan": "NYC",
+    "brooklyn": "NYC",
+
+    # San Francisco variations
+    "san francisco": "San Francisco",
+    "sf": "San Francisco",
+    "south san francisco": "San Francisco",
+
+    # Los Angeles variations
+    "los angeles": "Los Angeles",
+    "la": "Los Angeles",
+    "l.a.": "Los Angeles",
+
+    # Washington DC variations (distinct from Seattle and Washington state)
+    "washington dc": "Washington DC",
+    "washington d.c.": "Washington DC",
+    "washington, dc": "Washington DC",
+    "washington, d.c.": "Washington DC",
+    "dc": "Washington DC",
+    "d.c.": "Washington DC",
+    "district of columbia": "Washington DC",
+
+    # Seattle (distinct)
+    "seattle": "Seattle",
+
+    # Washington state
+    "washington state": "Washington",
+
+    # London
+    "london": "London",
+    "united kingdom": "London",
+    "uk": "London",
+    "england": "London",
+
+    # Other major cities - simple names
+    "boston": "Boston",
+    "cambridge": "Cambridge",
+    "austin": "Austin",
+    "chicago": "Chicago",
+    "denver": "Denver",
+    "atlanta": "Atlanta",
+    "miami": "Miami",
+    "dallas": "Dallas",
+    "houston": "Houston",
+    "philadelphia": "Philadelphia",
+    "pittsburgh": "Pittsburgh",
+    "san diego": "San Diego",
+    "san jose": "San Jose",
+    "mountain view": "Mountain View",
+    "palo alto": "Palo Alto",
+    "palo alto hq": "Palo Alto",
+    "menlo park": "Menlo Park",
+    "sunnyvale": "Sunnyvale",
+    "cupertino": "Cupertino",
+    "redwood city": "Redwood City",
+    "san mateo": "San Mateo",
+    "los altos": "Los Altos",
+    "santa clara": "Santa Clara",
+    "costa mesa": "Costa Mesa",
+    "irvine": "Irvine",
+    "mclean": "McLean",
+    "arlington": "Arlington",
+    "alexandria": "Alexandria",
+    "bellevue": "Bellevue",
+    "kirkland": "Kirkland",
+    "portland": "Portland",
+    "phoenix": "Phoenix",
+    "detroit": "Detroit",
+    "minneapolis": "Minneapolis",
+    "tampa": "Tampa",
+    "orlando": "Orlando",
+    "charlotte": "Charlotte",
+    "nashville": "Nashville",
+    "salt lake city": "Salt Lake City",
+    "las vegas": "Las Vegas",
+    "san antonio": "San Antonio",
+    "indianapolis": "Indianapolis",
+    "columbus": "Columbus",
+    "cleveland": "Cleveland",
+    "cincinnati": "Cincinnati",
+    "kansas city": "Kansas City",
+    "st. louis": "St. Louis",
+    "st louis": "St. Louis",
+    "raleigh": "Raleigh",
+    "durham": "Durham",
+    "cary": "Cary",
+    "bristol": "Bristol",
+    "oxford": "Oxford",
+    "edinburgh": "Edinburgh",
+    "manchester": "Manchester",
+
+    # Remote
+    "remote": "Remote",
+    "remote-friendly": "Remote",
+    "work from home": "Remote",
+    "anywhere": "Remote",
+
+    # Multiple locations
+    "multiple locations": "Multiple Locations",
+}
+
+# US State name to abbreviation mapping
+STATE_ABBREVS = {
+    "alabama": "AL", "alaska": "AK", "arizona": "AZ", "arkansas": "AR",
+    "california": "CA", "colorado": "CO", "connecticut": "CT", "delaware": "DE",
+    "florida": "FL", "georgia": "GA", "hawaii": "HI", "idaho": "ID",
+    "illinois": "IL", "indiana": "IN", "iowa": "IA", "kansas": "KS",
+    "kentucky": "KY", "louisiana": "LA", "maine": "ME", "maryland": "MD",
+    "massachusetts": "MA", "michigan": "MI", "minnesota": "MN", "mississippi": "MS",
+    "missouri": "MO", "montana": "MT", "nebraska": "NE", "nevada": "NV",
+    "new hampshire": "NH", "new jersey": "NJ", "new mexico": "NM", "new york": "NY",
+    "north carolina": "NC", "north dakota": "ND", "ohio": "OH", "oklahoma": "OK",
+    "oregon": "OR", "pennsylvania": "PA", "rhode island": "RI", "south carolina": "SC",
+    "south dakota": "SD", "tennessee": "TN", "texas": "TX", "utah": "UT",
+    "vermont": "VT", "virginia": "VA", "washington": "WA", "west virginia": "WV",
+    "wisconsin": "WI", "wyoming": "WY", "district of columbia": "DC"
+}
+
+# Reverse mapping: abbreviation to state name
+ABBREV_TO_STATE = {v: k.title() for k, v in STATE_ABBREVS.items()}
+ABBREV_TO_STATE["DC"] = "Washington DC"  # Special case
+
+
+def normalize_single_location(loc: str) -> str:
+    """Normalize a single location string to just city name."""
+    if not loc:
+        return ""
+
+    loc = loc.strip()
+
+    # Remove HQ suffix (e.g., "Palo Alto HQ" or "Palo Alto (HQ)")
+    loc = re.sub(r'\s*\(?HQ\)?$', '', loc, flags=re.IGNORECASE)
+    loc = loc.strip()
+
+    loc_lower = loc.lower()
+
+    # Remove extra whitespace
+    loc_lower = re.sub(r'\s+', ' ', loc_lower)
+
+    # Check for exact match in city normalizations
+    if loc_lower in CITY_NORMALIZATIONS:
+        return CITY_NORMALIZATIONS[loc_lower]
+
+    # Handle "Remote" variations
+    if 'remote' in loc_lower:
+        return "Remote"
+
+    # Handle "State - City" format (e.g., "California - La", "California - San Francisco")
+    state_city_pattern = re.match(r'^[A-Za-z\s]+ - (.+)$', loc)
+    if state_city_pattern:
+        city = state_city_pattern.group(1).strip()
+        # Normalize the extracted city
+        return normalize_single_location(city)
+
+    # Handle addresses - extract city from full addresses like "123 Street, City, ST"
+    address_pattern = re.match(r'^\d+.*?,\s*([^,]+),\s*[A-Z]{2}', loc, re.IGNORECASE)
+    if address_pattern:
+        city = address_pattern.group(1).strip()
+        return normalize_single_location(city)
+
+    # Handle "City, State/Country" patterns - extract just the city
+    # Pattern: "City, ST" or "City, State" or "City, ST, US" or "City, Country"
+    parts = [p.strip() for p in loc.split(',')]
+
+    if len(parts) >= 1:
+        city_part = parts[0].strip()
+        city_lower = city_part.lower()
+
+        # Check if first part is a known city
+        if city_lower in CITY_NORMALIZATIONS:
+            return CITY_NORMALIZATIONS[city_lower]
+
+        # Special handling for Washington - need context to distinguish DC vs state vs Seattle
+        if city_lower == "washington":
+            # Check if it's DC
+            if len(parts) > 1:
+                second = parts[1].strip().lower()
+                if second in ["dc", "d.c.", "district of columbia"]:
+                    return "Washington DC"
+                elif second in ["wa", "washington", "us", "usa", "united states"]:
+                    # Could be state, but "Washington, WA" is unusual
+                    # If just "Washington, US" treat as state
+                    if second in ["us", "usa", "united states"]:
+                        return "Washington"
+            return "Washington DC"  # Default to DC if ambiguous
+
+        # Check if it's a state-only location (e.g., "Nebraska, United States")
+        if city_lower in STATE_ABBREVS:
+            return city_part.title()
+        if city_part.upper() in ABBREV_TO_STATE and len(parts) > 1:
+            # This is a state abbreviation, return full state name
+            return ABBREV_TO_STATE[city_part.upper()]
+
+        # For "New York City, NY, US" type patterns
+        if 'new york' in city_lower:
+            return "NYC"
+
+        # For patterns like "San Francisco, CA, US" - just return city
+        # Title case the city
+        return city_part.title() if city_part else ""
+
+    return loc.strip()
+
+
+def normalize_location(location: str) -> str:
+    """Normalize location string, handling multi-location jobs."""
+    if not location:
+        return ""
+
+    # Handle special cases
+    if "BLANK" in location:
+        return "Multiple Locations"
+    if location.strip() == "":
+        return ""
+
+    # Check for "United States" only (no city)
+    if location.strip().lower() in ["united states", "usa", "us"]:
+        return "Remote"
+
+    # Split on common multi-location delimiters: ; | /
+    # But be careful not to split on / in "NY/NJ" type patterns
+    delimiters = [';', ' | ', ' / ']
+    locations = [location]
+
+    for delimiter in delimiters:
+        new_locations = []
+        for loc in locations:
+            new_locations.extend(loc.split(delimiter))
+        locations = new_locations
+
+    # Normalize each location
+    normalized = []
+    seen = set()
+    for loc in locations:
+        loc = loc.strip()
+        if not loc:
+            continue
+
+        norm = normalize_single_location(loc)
+        if norm and norm not in seen:
+            normalized.append(norm)
+            seen.add(norm)
+
+    # Join with "; " for multi-location jobs
+    if len(normalized) == 0:
+        return ""
+    elif len(normalized) == 1:
+        return normalized[0]
+    else:
+        return "; ".join(normalized)
 
 
 class Database:
@@ -138,6 +398,9 @@ class Database:
         if existing:
             return False
 
+        # Normalize location before saving
+        location = normalize_location(job_data.get("location", ""))
+
         cursor.execute("""
             INSERT INTO jobs (
                 id, board_name, company, title, location, description,
@@ -149,7 +412,7 @@ class Database:
             job_data["board_name"],
             job_data["company"],
             job_data["title"],
-            job_data.get("location"),
+            location,
             job_data.get("description"),
             job_data["url"],
             job_data.get("posted_date"),
@@ -255,6 +518,28 @@ class Database:
         cursor.execute("DELETE FROM scans")
         self.conn.commit()
         return cursor.execute("SELECT changes()").fetchone()[0]
+
+    def normalize_all_locations(self) -> int:
+        """Normalize all location strings in the database."""
+        cursor = self.conn.cursor()
+
+        # Get all unique locations
+        rows = cursor.execute("SELECT DISTINCT location FROM jobs WHERE location IS NOT NULL").fetchall()
+        updated = 0
+
+        for row in rows:
+            old_location = row["location"]
+            if old_location:
+                new_location = normalize_location(old_location)
+                if new_location != old_location:
+                    cursor.execute(
+                        "UPDATE jobs SET location = ? WHERE location = ?",
+                        (new_location, old_location)
+                    )
+                    updated += cursor.rowcount
+
+        self.conn.commit()
+        return updated
 
     def get_stats(self) -> Dict[str, Any]:
         """Get database statistics."""

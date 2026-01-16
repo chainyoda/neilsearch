@@ -336,6 +336,10 @@ class JobMatcher:
             return config.LOCATION_BONUS["san_francisco"]
         elif any(area in location_lower for area in ["bay area", "palo alto", "mountain view", "oakland", "berkeley"]):
             return config.LOCATION_BONUS["bay_area"]
+        elif "london" in location_lower:
+            return config.LOCATION_BONUS["london"]
+        elif any(area in location_lower for area in ["united kingdom", "uk", "england", "cambridge", "oxford", "edinburgh", "manchester"]):
+            return config.LOCATION_BONUS["uk"]
         elif "remote" in location_lower:
             return config.LOCATION_BONUS["remote"]
 
