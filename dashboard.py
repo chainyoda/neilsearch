@@ -391,6 +391,10 @@ DASHBOARD_TEMPLATE = """
                 <label>&nbsp;</label>
                 <button class="btn btn-reset" id="resetFilters" onclick="resetAllFilters()">Reset All Filters</button>
             </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="btn" id="saveStatuses" onclick="saveStatusesToFile()" style="background: #27ae60;">Save Statuses</button>
+            </div>
         </div>
     </div>
 
@@ -620,8 +624,60 @@ DASHBOARD_TEMPLATE = """
 
         function updateStatus(jobId, status) {
             console.log(`Update status for ${jobId} to ${status}`);
-            // In a real implementation, this would call back to Python to update the database
-            alert(`Status updated to: ${status}\\nNote: This is a demo. Status updates aren't persisted in this version.`);
+
+            // Update jobsData
+            const job = jobsData.find(j => j.id === jobId);
+            if (job) {
+                job.app_status = status;
+            }
+
+            // Save to localStorage
+            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
+            if (status) {
+                savedStatuses[jobId] = status;
+            } else {
+                delete savedStatuses[jobId];
+            }
+            localStorage.setItem('jobStatuses', JSON.stringify(savedStatuses));
+
+            // Re-filter to update counts
+            filterAndSortJobs();
+        }
+
+        function loadStatusesFromStorage() {
+            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
+            let loaded = 0;
+            jobsData.forEach(job => {
+                if (savedStatuses[job.id]) {
+                    job.app_status = savedStatuses[job.id];
+                    loaded++;
+                }
+            });
+            if (loaded > 0) {
+                console.log(`Loaded ${loaded} saved statuses from localStorage`);
+            }
+        }
+
+        function saveStatusesToFile() {
+            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
+            const statusCount = Object.keys(savedStatuses).length;
+
+            if (statusCount === 0) {
+                alert('No status updates to save.');
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(savedStatuses, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'job_statuses.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert(`Saved ${statusCount} status updates to job_statuses.json\\n\\nRun this to import into database:\\npython neilsearch.py dashboard --import-statuses job_statuses.json`);
         }
 
         function resetAllFilters() {
@@ -756,7 +812,61 @@ DASHBOARD_TEMPLATE = """
             updateStats(filtered);
             updateCharts(filtered);
             updateSubtitle();
+            updateUrlParams();
             console.log('Filter complete');
+        }
+
+        // URL parameter handling for shareable links
+        let skipUrlUpdate = false;
+
+        function updateUrlParams() {
+            if (skipUrlUpdate) return;
+            const params = new URLSearchParams();
+
+            const minScore = document.getElementById('minScore').value;
+            const searchText = document.getElementById('searchInput').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            const companyFilter = document.getElementById('companyFilter').value;
+            const sectorFilter = document.getElementById('sectorFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            // Only add non-default values to URL
+            if (minScore !== '0') params.set('score', minScore);
+            if (searchText) params.set('q', searchText);
+            if (statusFilter) params.set('status', statusFilter);
+            if (sortBy !== 'score') params.set('sort', sortBy);
+            if (companyFilter) params.set('company', companyFilter);
+            if (sectorFilter) params.set('sector', sectorFilter);
+            if (locationFilter) params.set('location', locationFilter);
+            if (dateFilter) params.set('date', dateFilter);
+
+            const newUrl = params.toString()
+                ? `${window.location.pathname}?${params.toString()}`
+                : window.location.pathname;
+
+            // Only update if URL actually changed
+            if (newUrl !== window.location.pathname + window.location.search) {
+                window.history.pushState({}, '', newUrl);
+            }
+        }
+
+        function loadFiltersFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+
+            // Set values from URL or reset to defaults
+            const score = params.get('score') || '0';
+            document.getElementById('minScore').value = score;
+            document.getElementById('minScoreValue').textContent = score;
+
+            document.getElementById('searchInput').value = params.get('q') || '';
+            document.getElementById('statusFilter').value = params.get('status') || '';
+            document.getElementById('sortBy').value = params.get('sort') || 'score';
+            document.getElementById('companyFilter').value = params.get('company') || '';
+            document.getElementById('sectorFilter').value = params.get('sector') || '';
+            document.getElementById('locationFilter').value = params.get('location') || '';
+            document.getElementById('dateFilter').value = params.get('date') || '';
         }
 
         // Event listeners
@@ -772,6 +882,14 @@ DASHBOARD_TEMPLATE = """
         document.getElementById('sectorFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('locationFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('dateFilter').addEventListener('change', filterAndSortJobs);
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', () => {
+            skipUrlUpdate = true;
+            loadFiltersFromUrl();
+            filterAndSortJobs();
+            skipUrlUpdate = false;
+        });
 
         // Initialize Charts FIRST (before any filtering)
         // Companies chart
@@ -835,9 +953,12 @@ DASHBOARD_TEMPLATE = """
         companiesChart = initCompaniesChart(jobsData);
         scoresChart = initScoresChart(jobsData);
 
-        // Initial render
-        renderJobs(jobsData);
-        updateStats(jobsData);
+        // Load saved statuses from localStorage
+        loadStatusesFromStorage();
+
+        // Load filters from URL and apply them
+        loadFiltersFromUrl();
+        filterAndSortJobs();
     </script>
 </body>
 </html>

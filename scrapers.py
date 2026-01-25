@@ -76,6 +76,11 @@ class LinkedInScraper(BaseScraper):
                             company_elem = card.query_selector(".base-search-card__subtitle")
                             location_elem = card.query_selector(".job-search-card__location")
                             link_elem = card.query_selector("a")
+                            # Extract posted date from time element
+                            time_elem = card.query_selector("time")
+                            posted_date = None
+                            if time_elem:
+                                posted_date = time_elem.get_attribute("datetime")
 
                             if title_elem and company_elem and link_elem:
                                 title = title_elem.inner_text().strip()
@@ -91,7 +96,7 @@ class LinkedInScraper(BaseScraper):
                                     "location": self.normalize_location(location),
                                     "url": url,
                                     "description": "",  # Would need to click through to get full description
-                                    "posted_date": None,
+                                    "posted_date": posted_date,
                                     "scraped_date": datetime.now().isoformat()
                                 })
                         except Exception as e:
@@ -114,6 +119,39 @@ class IndeedScraper(BaseScraper):
     def __init__(self):
         super().__init__("Indeed")
         self.base_url = "https://www.indeed.com/jobs"
+
+    def _parse_indeed_date(self, date_text: str) -> Optional[str]:
+        """Parse Indeed's relative date strings like 'Posted 3 days ago'."""
+        import re
+        from datetime import timedelta
+
+        if not date_text:
+            return None
+
+        date_text = date_text.lower().strip()
+        now = datetime.now()
+
+        # Handle "Just posted" or "Today"
+        if "just" in date_text or "today" in date_text:
+            return now.isoformat()
+
+        # Handle "X days ago"
+        days_match = re.search(r'(\d+)\s*day', date_text)
+        if days_match:
+            days = int(days_match.group(1))
+            return (now - timedelta(days=days)).isoformat()
+
+        # Handle "X hours ago"
+        hours_match = re.search(r'(\d+)\s*hour', date_text)
+        if hours_match:
+            hours = int(hours_match.group(1))
+            return (now - timedelta(hours=hours)).isoformat()
+
+        # Handle "30+ days ago"
+        if "30+" in date_text:
+            return (now - timedelta(days=30)).isoformat()
+
+        return None
 
     def scrape(self) -> List[Dict]:
         """Scrape Indeed jobs."""
@@ -143,6 +181,9 @@ class IndeedScraper(BaseScraper):
                         title_elem = card.find("h2", class_="jobTitle")
                         company_elem = card.find("span", class_="companyName")
                         location_elem = card.find("div", class_="companyLocation")
+                        # Extract posted date from Indeed's date element
+                        date_elem = card.find("span", class_="date")
+                        posted_date = self._parse_indeed_date(date_elem.get_text(strip=True)) if date_elem else None
 
                         if title_elem and company_elem:
                             title_link = title_elem.find("a")
@@ -159,7 +200,7 @@ class IndeedScraper(BaseScraper):
                                     "location": location_elem.get_text(strip=True) if location_elem else location,
                                     "url": url,
                                     "description": "",
-                                    "posted_date": None,
+                                    "posted_date": posted_date,
                                     "scraped_date": datetime.now().isoformat()
                                 })
                     except Exception as e:
@@ -208,6 +249,11 @@ class AngelListScraper(BaseScraper):
                         company = elem.query_selector("[data-test='CompanyName']")
                         location = elem.query_selector("[data-test='JobSearchCardLocation']")
                         link = elem.query_selector("a")
+                        # Try to find date element
+                        time_elem = elem.query_selector("time")
+                        posted_date = None
+                        if time_elem:
+                            posted_date = time_elem.get_attribute("datetime")
 
                         if title and company and link:
                             url = "https://wellfound.com" + link.get_attribute("href")
@@ -220,7 +266,7 @@ class AngelListScraper(BaseScraper):
                                 "location": location.inner_text().strip() if location else "San Francisco, CA",
                                 "url": url,
                                 "description": "",
-                                "posted_date": None,
+                                "posted_date": posted_date,
                                 "scraped_date": datetime.now().isoformat()
                             })
                     except Exception as e:
@@ -275,6 +321,12 @@ class YCombinatorScraper(BaseScraper):
                         title = parts[0] if parts else "ML Engineer"
                         company = parts[1] if len(parts) > 1 else "YC Company"
 
+                        # Try to find date from parent context
+                        time_elem = parent.as_element().query_selector("time") if parent else None
+                        posted_date = None
+                        if time_elem:
+                            posted_date = time_elem.get_attribute("datetime")
+
                         jobs.append({
                             "id": self.generate_job_id(url),
                             "board_name": self.board_name,
@@ -283,7 +335,7 @@ class YCombinatorScraper(BaseScraper):
                             "location": "San Francisco, CA",
                             "url": url,
                             "description": "",
-                            "posted_date": None,
+                            "posted_date": posted_date,
                             "scraped_date": datetime.now().isoformat()
                         })
                     except Exception as e:
@@ -354,6 +406,13 @@ class CompanyCareersPageScraper(BaseScraper):
                         if any(keyword in text.lower() for keyword in ["machine learning", "ml", "ai", "engineer", "scientist"]):
                             url = href if href.startswith("http") else f"https://www.{self.board_name.lower().replace(' ', '')}.com{href}"
 
+                            # Try to find date from parent context
+                            parent = elem.evaluate_handle("element => element.closest('div, li, article')")
+                            time_elem = parent.as_element().query_selector("time") if parent else None
+                            posted_date = None
+                            if time_elem:
+                                posted_date = time_elem.get_attribute("datetime")
+
                             jobs.append({
                                 "id": self.generate_job_id(url),
                                 "board_name": self.board_name,
@@ -362,7 +421,7 @@ class CompanyCareersPageScraper(BaseScraper):
                                 "location": "San Francisco, CA",
                                 "url": url,
                                 "description": "",
-                                "posted_date": None,
+                                "posted_date": posted_date,
                                 "scraped_date": datetime.now().isoformat()
                             })
                     except Exception as e:
@@ -455,8 +514,9 @@ class HackerNewsWhoIsHiringScraper(BaseScraper):
                     if not any(kw in text_lower for kw in self.ml_keywords):
                         continue
 
-                    # Parse the job posting
-                    job_info = self._parse_hn_job(text, comment_id)
+                    # Parse the job posting - pass timestamp for posted_date
+                    comment_time = comment.get("time")
+                    job_info = self._parse_hn_job(text, comment_id, comment_time)
                     if job_info:
                         jobs.append(job_info)
 
@@ -470,7 +530,7 @@ class HackerNewsWhoIsHiringScraper(BaseScraper):
 
         return jobs
 
-    def _parse_hn_job(self, text: str, comment_id: int) -> Optional[Dict]:
+    def _parse_hn_job(self, text: str, comment_id: int, comment_time: Optional[int] = None) -> Optional[Dict]:
         """Parse a HN job posting comment into structured data."""
         import re
         from html import unescape
@@ -511,6 +571,7 @@ class HackerNewsWhoIsHiringScraper(BaseScraper):
                 break
 
         url = f"https://news.ycombinator.com/item?id={comment_id}"
+        posted_date = datetime.fromtimestamp(comment_time).isoformat() if comment_time else None
 
         return {
             "id": self.generate_job_id(url),
@@ -520,7 +581,7 @@ class HackerNewsWhoIsHiringScraper(BaseScraper):
             "location": location[:100] if location else "Remote/Various",
             "url": url,
             "description": text_clean[:2000],
-            "posted_date": None,
+            "posted_date": posted_date,
             "scraped_date": datetime.now().isoformat()
         }
 

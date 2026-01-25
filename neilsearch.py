@@ -104,6 +104,52 @@ def scan(boards):
     console.print("[bold]Scraping job boards...[/bold]")
     jobs = scraper_manager.scrape_all(board_names=board_list)
 
+    if not jobs:
+        console.print("[yellow]No jobs found.[/yellow]")
+        return
+
+    # Match jobs against profile
+    console.print("\n[bold]Matching jobs against profile...[/bold]")
+    matcher = JobMatcher(profile_data['profile_data'])
+
+    new_jobs = 0
+    duplicates = 0
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console
+    ) as progress:
+        task = progress.add_task("Processing jobs...", total=len(jobs))
+
+        with Database() as db:
+            for job in jobs:
+                # Match job
+                match_result = matcher.match_job(job)
+
+                # Add match results to job data
+                job.update(match_result)
+
+                # Save to database
+                is_new = db.save_job(job)
+                if is_new:
+                    new_jobs += 1
+                else:
+                    duplicates += 1
+
+                progress.update(task, advance=1)
+
+            # Save scan history
+            duration = time.time() - start_time
+            boards_scanned = len(board_list) if board_list else 8
+            db.save_scan_history(new_jobs, boards_scanned, duration)
+
+    # Display results
+    console.print(f"\n[bold green]Scan complete![/bold green]")
+    console.print(f"[green]New jobs:[/green] {new_jobs}")
+    console.print(f"[yellow]Duplicate jobs:[/yellow] {duplicates}")
+    console.print(f"[blue]Duration:[/blue] {duration:.1f}s\n")
+
 
 @cli.command("scan-companies")
 @click.option("--companies", help="Comma-separated list of companies (e.g., 'openai,anthropic,cohere')")
@@ -367,7 +413,9 @@ def list_companies():
 
 
 @cli.command()
-def dashboard():
+@click.option("--import-statuses", type=click.Path(exists=True), help="Import job statuses from JSON file")
+@click.option("--publish", is_flag=True, help="Publish to GitHub Pages")
+def dashboard(import_statuses, publish):
     """Generate and open the job dashboard."""
     console.print("\n[bold blue]Generating dashboard...[/bold blue]\n")
 
@@ -376,6 +424,20 @@ def dashboard():
         if not profile_data:
             console.print("[bold red]Error:[/bold red] No profile found. Run 'python neilsearch.py profile --resume <path>' first.")
             sys.exit(1)
+
+        # Import statuses from JSON file if provided
+        if import_statuses:
+            import json
+            try:
+                with open(import_statuses, 'r') as f:
+                    statuses = json.load(f)
+                imported = 0
+                for job_id, status in statuses.items():
+                    db.update_application_status(job_id, status)
+                    imported += 1
+                console.print(f"[green]Imported {imported} status updates from {import_statuses}[/green]\n")
+            except Exception as e:
+                console.print(f"[yellow]Warning: Could not import statuses: {e}[/yellow]\n")
 
         jobs = db.get_jobs()
         stats = db.get_stats()
@@ -394,6 +456,22 @@ def dashboard():
     console.print(f"[green]Dashboard generated:[/green] {output_path}")
     console.print(f"[green]Total jobs:[/green] {len(jobs)}")
     console.print(f"[green]Average match score:[/green] {stats['avg_match_score']}\n")
+
+    # Publish to GitHub Pages if requested
+    if publish:
+        import subprocess
+        import shutil
+        docs_path = Path(__file__).parent / "docs"
+        docs_path.mkdir(exist_ok=True)
+        shutil.copy(output_path, docs_path / "index.html")
+
+        try:
+            subprocess.run(["git", "add", "docs/"], check=True, capture_output=True)
+            subprocess.run(["git", "commit", "-m", "Update dashboard"], check=True, capture_output=True)
+            subprocess.run(["git", "push", "origin", "main"], check=True, capture_output=True)
+            console.print(f"[green]Published to:[/green] https://chainyoda.github.io/neilsearch/\n")
+        except subprocess.CalledProcessError as e:
+            console.print(f"[yellow]Warning: Could not publish - {e}[/yellow]\n")
 
     # Open in browser
     console.print("[bold]Opening dashboard in browser...[/bold]")
