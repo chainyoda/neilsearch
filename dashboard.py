@@ -1,8 +1,14 @@
 """Generate HTML dashboard for job results."""
 import json
+import socket
+import threading
+import webbrowser
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import List, Dict
 from datetime import datetime
 from jinja2 import Template
+
+from database import Database
 
 
 DASHBOARD_TEMPLATE = """
@@ -234,6 +240,12 @@ DASHBOARD_TEMPLATE = """
             font-size: 0.9em;
         }
 
+        .status-select.status-prioritized {
+            border-color: #f39c12;
+            background: #fef9e7;
+            font-weight: 600;
+        }
+
         .analytics {
             background: white;
             padding: 20px;
@@ -346,10 +358,12 @@ DASHBOARD_TEMPLATE = """
                 <label>Application Status</label>
                 <select id="statusFilter">
                     <option value="">All Statuses</option>
+                    <option value="prioritized">Prioritized</option>
                     <option value="not_applied">Not Applied</option>
                     <option value="applied">Applied</option>
                     <option value="interviewing">Interviewing</option>
                     <option value="rejected">Rejected</option>
+                    <option value="not_interested">Not Interested</option>
                 </select>
             </div>
             <div>
@@ -390,10 +404,6 @@ DASHBOARD_TEMPLATE = """
             <div>
                 <label>&nbsp;</label>
                 <button class="btn btn-reset" id="resetFilters" onclick="resetAllFilters()">Reset All Filters</button>
-            </div>
-            <div>
-                <label>&nbsp;</label>
-                <button class="btn" id="saveStatuses" onclick="saveStatusesToFile()" style="background: #27ae60;">Save Statuses</button>
             </div>
         </div>
     </div>
@@ -561,7 +571,7 @@ DASHBOARD_TEMPLATE = """
                                 <div class="job-company">${job.company}</div>
                                 <div class="job-location">${job.location || 'San Francisco, CA'}</div>
                             </div>
-                            <div class="match-score ${scoreClass}">${job.match_score.toFixed(0)}</div>
+                            <div class="match-score ${scoreClass}">${(job.match_score || 0).toFixed(0)}</div>
                         </div>
 
                         <div class="job-details">
@@ -603,12 +613,13 @@ DASHBOARD_TEMPLATE = """
                             <div class="job-actions">
                                 <a href="${job.url}" target="_blank" class="btn btn-primary">View Job</a>
                                 <button class="btn btn-secondary" onclick="toggleDetails('${job.id}')">Details</button>
-                                <select class="status-select" onchange="updateStatus('${job.id}', this.value)">
-                                    <option value="">Set Status</option>
-                                    <option value="applied">Applied</option>
-                                    <option value="interviewing">Interviewing</option>
-                                    <option value="rejected">Rejected</option>
-                                    <option value="not_interested">Not Interested</option>
+                                <select class="status-select ${job.app_status === 'prioritized' ? 'status-prioritized' : ''}" onchange="updateStatus('${job.id}', this.value)">
+                                    <option value="" ${!job.app_status ? 'selected' : ''}>Set Status</option>
+                                    <option value="prioritized" ${job.app_status === 'prioritized' ? 'selected' : ''}>Prioritized</option>
+                                    <option value="applied" ${job.app_status === 'applied' ? 'selected' : ''}>Applied</option>
+                                    <option value="interviewing" ${job.app_status === 'interviewing' ? 'selected' : ''}>Interviewing</option>
+                                    <option value="rejected" ${job.app_status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                    <option value="not_interested" ${job.app_status === 'not_interested' ? 'selected' : ''}>Not Interested</option>
                                 </select>
                             </div>
                         </div>
@@ -631,54 +642,23 @@ DASHBOARD_TEMPLATE = """
                 job.app_status = status;
             }
 
-            // Save to localStorage
-            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
-            if (status) {
-                savedStatuses[jobId] = status;
-            } else {
-                delete savedStatuses[jobId];
-            }
-            localStorage.setItem('jobStatuses', JSON.stringify(savedStatuses));
+            // Persist to database via API
+            fetch('/api/status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job_id: jobId, status: status })
+            }).then(resp => {
+                if (!resp.ok) {
+                    console.error('Failed to save status to database');
+                }
+            }).catch(err => {
+                console.error('Error saving status:', err);
+            });
 
             // Re-filter to update counts
             filterAndSortJobs();
         }
 
-        function loadStatusesFromStorage() {
-            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
-            let loaded = 0;
-            jobsData.forEach(job => {
-                if (savedStatuses[job.id]) {
-                    job.app_status = savedStatuses[job.id];
-                    loaded++;
-                }
-            });
-            if (loaded > 0) {
-                console.log(`Loaded ${loaded} saved statuses from localStorage`);
-            }
-        }
-
-        function saveStatusesToFile() {
-            const savedStatuses = JSON.parse(localStorage.getItem('jobStatuses') || '{}');
-            const statusCount = Object.keys(savedStatuses).length;
-
-            if (statusCount === 0) {
-                alert('No status updates to save.');
-                return;
-            }
-
-            const blob = new Blob([JSON.stringify(savedStatuses, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'job_statuses.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            alert(`Saved ${statusCount} status updates to job_statuses.json\\n\\nRun this to import into database:\\npython neilsearch.py dashboard --import-statuses job_statuses.json`);
-        }
 
         function resetAllFilters() {
             document.getElementById('minScore').value = 0;
@@ -762,7 +742,7 @@ DASHBOARD_TEMPLATE = """
             const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
 
             let filtered = jobsData.filter(job => {
-                if (job.match_score < minScore) return false;
+                if ((job.match_score || 0) < minScore) return false;
                 if (searchText && !JSON.stringify(job).toLowerCase().includes(searchText)) return false;
                 if (statusFilter && job.app_status !== statusFilter) return false;
                 if (companyFilter && job.company !== companyFilter) return false;
@@ -807,67 +787,12 @@ DASHBOARD_TEMPLATE = """
                 return 0;
             });
 
-            console.log('Filtered to', filtered.length, 'jobs');
             renderJobs(filtered);
             updateStats(filtered);
             updateCharts(filtered);
             updateSubtitle();
-            updateUrlParams();
-            console.log('Filter complete');
         }
 
-        // URL parameter handling for shareable links
-        let skipUrlUpdate = false;
-
-        function updateUrlParams() {
-            if (skipUrlUpdate) return;
-            const params = new URLSearchParams();
-
-            const minScore = document.getElementById('minScore').value;
-            const searchText = document.getElementById('searchInput').value;
-            const statusFilter = document.getElementById('statusFilter').value;
-            const sortBy = document.getElementById('sortBy').value;
-            const companyFilter = document.getElementById('companyFilter').value;
-            const sectorFilter = document.getElementById('sectorFilter').value;
-            const locationFilter = document.getElementById('locationFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-
-            // Only add non-default values to URL
-            if (minScore !== '0') params.set('score', minScore);
-            if (searchText) params.set('q', searchText);
-            if (statusFilter) params.set('status', statusFilter);
-            if (sortBy !== 'score') params.set('sort', sortBy);
-            if (companyFilter) params.set('company', companyFilter);
-            if (sectorFilter) params.set('sector', sectorFilter);
-            if (locationFilter) params.set('location', locationFilter);
-            if (dateFilter) params.set('date', dateFilter);
-
-            const newUrl = params.toString()
-                ? `${window.location.pathname}?${params.toString()}`
-                : window.location.pathname;
-
-            // Only update if URL actually changed
-            if (newUrl !== window.location.pathname + window.location.search) {
-                window.history.pushState({}, '', newUrl);
-            }
-        }
-
-        function loadFiltersFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-
-            // Set values from URL or reset to defaults
-            const score = params.get('score') || '0';
-            document.getElementById('minScore').value = score;
-            document.getElementById('minScoreValue').textContent = score;
-
-            document.getElementById('searchInput').value = params.get('q') || '';
-            document.getElementById('statusFilter').value = params.get('status') || '';
-            document.getElementById('sortBy').value = params.get('sort') || 'score';
-            document.getElementById('companyFilter').value = params.get('company') || '';
-            document.getElementById('sectorFilter').value = params.get('sector') || '';
-            document.getElementById('locationFilter').value = params.get('location') || '';
-            document.getElementById('dateFilter').value = params.get('date') || '';
-        }
 
         // Event listeners
         document.getElementById('minScore').addEventListener('input', (e) => {
@@ -883,13 +808,6 @@ DASHBOARD_TEMPLATE = """
         document.getElementById('locationFilter').addEventListener('change', filterAndSortJobs);
         document.getElementById('dateFilter').addEventListener('change', filterAndSortJobs);
 
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', () => {
-            skipUrlUpdate = true;
-            loadFiltersFromUrl();
-            filterAndSortJobs();
-            skipUrlUpdate = false;
-        });
 
         // Initialize Charts FIRST (before any filtering)
         // Companies chart
@@ -953,11 +871,7 @@ DASHBOARD_TEMPLATE = """
         companiesChart = initCompaniesChart(jobsData);
         scoresChart = initScoresChart(jobsData);
 
-        // Load saved statuses from localStorage
-        loadStatusesFromStorage();
-
-        // Load filters from URL and apply them
-        loadFiltersFromUrl();
+        // Initial render
         filterAndSortJobs();
     </script>
 </body>
@@ -1000,3 +914,77 @@ def generate_dashboard(jobs: List[Dict], stats: Dict, profile: Dict) -> str:
     )
 
     return html
+
+
+def _find_free_port():
+    """Find a free port on localhost."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0))
+        return s.getsockname()[1]
+
+
+def serve_dashboard(html_content: str):
+    """Serve the dashboard via a local HTTP server with a status update API."""
+    port = _find_free_port()
+
+    class DashboardHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            # Regenerate HTML from database on every page load so statuses are fresh
+            with Database() as db:
+                jobs = db.get_jobs()
+                stats = db.get_stats()
+                profile = db.get_profile()
+            fresh_html = generate_dashboard(jobs, stats, profile)
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+            self.end_headers()
+            self.wfile.write(fresh_html.encode('utf-8'))
+
+        def do_POST(self):
+            if self.path == '/api/status':
+                content_length = int(self.headers.get('Content-Length', 0))
+                body = json.loads(self.rfile.read(content_length))
+                job_id = body.get('job_id', '')
+                status = body.get('status', '')
+
+                try:
+                    with Database() as db:
+                        if status:
+                            db.update_application_status(job_id, status)
+                        else:
+                            db.delete_application_status(job_id)
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({'ok': True}).encode())
+                except Exception as e:
+                    self.send_response(500)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({'error': str(e)}).encode())
+            else:
+                self.send_response(404)
+                self.end_headers()
+
+        def log_message(self, format, *args):
+            # Suppress default request logging
+            pass
+
+    server = HTTPServer(('127.0.0.1', port), DashboardHandler)
+    url = f'http://127.0.0.1:{port}'
+
+    # Open browser after a short delay
+    threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+
+    print(f"Dashboard running at {url}")
+    print("Press Ctrl+C to stop.")
+
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()

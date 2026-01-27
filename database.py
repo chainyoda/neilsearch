@@ -481,6 +481,12 @@ class Database:
         """, (job_id, status, notes, datetime.now().isoformat()))
         self.conn.commit()
 
+    def delete_application_status(self, job_id: str):
+        """Remove application status for a job."""
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM applications WHERE job_id = ?", (job_id,))
+        self.conn.commit()
+
     def save_scan_history(self, jobs_found: int, boards_scanned: int, duration: float):
         """Save scan history."""
         cursor = self.conn.cursor()

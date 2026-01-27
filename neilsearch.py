@@ -17,7 +17,7 @@ from database import Database
 from resume_parser import parse_resume
 from scrapers import ScraperManager
 from matcher import JobMatcher
-from dashboard import generate_dashboard
+from dashboard import generate_dashboard, serve_dashboard
 
 
 console = Console()
@@ -449,11 +449,6 @@ def dashboard(import_statuses, publish):
     # Generate HTML dashboard
     html_content = generate_dashboard(jobs, stats, profile_data)
 
-    # Write to file
-    output_path = config.DASHBOARD_OUTPUT
-    output_path.write_text(html_content)
-
-    console.print(f"[green]Dashboard generated:[/green] {output_path}")
     console.print(f"[green]Total jobs:[/green] {len(jobs)}")
     console.print(f"[green]Average match score:[/green] {stats['avg_match_score']}\n")
 
@@ -461,6 +456,8 @@ def dashboard(import_statuses, publish):
     if publish:
         import subprocess
         import shutil
+        output_path = config.DASHBOARD_OUTPUT
+        output_path.write_text(html_content)
         docs_path = Path(__file__).parent / "docs"
         docs_path.mkdir(exist_ok=True)
         shutil.copy(output_path, docs_path / "index.html")
@@ -473,9 +470,8 @@ def dashboard(import_statuses, publish):
         except subprocess.CalledProcessError as e:
             console.print(f"[yellow]Warning: Could not publish - {e}[/yellow]\n")
 
-    # Open in browser
-    console.print("[bold]Opening dashboard in browser...[/bold]")
-    webbrowser.open(f"file://{output_path.absolute()}")
+    # Serve dashboard with live status persistence
+    serve_dashboard(html_content)
 
 
 @cli.command()
