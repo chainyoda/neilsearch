@@ -125,13 +125,6 @@ DASHBOARD_TEMPLATE = """
         .job-card.medium-match { border-left-color: #f39c12; }
         .job-card.low-match { border-left-color: #95a5a6; }
 
-        .job-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 15px;
-        }
-
         .job-title {
             font-size: 1.3em;
             font-weight: bold;
@@ -269,6 +262,74 @@ DASHBOARD_TEMPLATE = """
         .chart-container {
             position: relative;
             height: 300px;
+        }
+
+        .bulk-bar {
+            display: flex;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .bulk-bar .bulk-count {
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .bulk-bar select {
+            padding: 6px 12px;
+            border-radius: 5px;
+            border: none;
+            font-size: 0.9em;
+        }
+
+        .bulk-bar button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .bulk-bar .btn-apply {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .bulk-bar .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            margin-left: auto;
+        }
+
+        .job-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-right: 12px;
+            accent-color: #667eea;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .job-header-left {
+            display: flex;
+            align-items: start;
         }
 
         .no-results {
@@ -420,6 +481,21 @@ DASHBOARD_TEMPLATE = """
         </div>
     </div>
 
+    <div class="bulk-bar" id="bulkBar">
+        <input type="checkbox" class="job-checkbox" id="selectAll" onclick="toggleSelectAll(this.checked)" style="margin-right:8px">
+        <span class="bulk-count" id="bulkCount">0 selected</span>
+        <select id="bulkStatus">
+            <option value="">Set Status...</option>
+            <option value="prioritized">Prioritized</option>
+            <option value="applied">Applied</option>
+            <option value="interviewing">Interviewing</option>
+            <option value="rejected">Rejected</option>
+            <option value="not_interested">Not Interested</option>
+        </select>
+        <button class="btn-apply" onclick="applyBulkStatus()">Apply</button>
+        <button class="btn-cancel" onclick="clearSelection()">Cancel</button>
+    </div>
+
     <div class="job-grid" id="jobGrid">
         <!-- Jobs will be inserted here by JavaScript -->
     </div>
@@ -566,10 +642,13 @@ DASHBOARD_TEMPLATE = """
                 return `
                     <div class="job-card ${cardClass}" data-job-id="${job.id}">
                         <div class="job-header">
-                            <div>
-                                <div class="job-title">${job.title}</div>
-                                <div class="job-company">${job.company}</div>
-                                <div class="job-location">${job.location || 'San Francisco, CA'}</div>
+                            <div class="job-header-left">
+                                <input type="checkbox" class="job-checkbox" data-job-id="${job.id}" onclick="toggleSelection(event, '${job.id}')">
+                                <div>
+                                    <div class="job-title">${job.title}</div>
+                                    <div class="job-company">${job.company}</div>
+                                    <div class="job-location">${job.location || 'San Francisco, CA'}</div>
+                                </div>
                             </div>
                             <div class="match-score ${scoreClass}">${(job.match_score || 0).toFixed(0)}</div>
                         </div>
@@ -744,7 +823,12 @@ DASHBOARD_TEMPLATE = """
             let filtered = jobsData.filter(job => {
                 if ((job.match_score || 0) < minScore) return false;
                 if (searchText && !JSON.stringify(job).toLowerCase().includes(searchText)) return false;
-                if (statusFilter && job.app_status !== statusFilter) return false;
+                if (statusFilter) {
+                    if (job.app_status !== statusFilter) return false;
+                } else {
+                    // Hide rejected and not_interested jobs by default
+                    if (job.app_status === 'rejected' || job.app_status === 'not_interested') return false;
+                }
                 if (companyFilter && job.company !== companyFilter) return false;
                 if (sectorFilter && job.sector !== sectorFilter) return false;
                 // Location filter: check if selected city is in the job's location
@@ -793,6 +877,70 @@ DASHBOARD_TEMPLATE = """
             updateSubtitle();
         }
 
+
+        // Bulk selection state
+        const selectedJobs = new Set();
+
+        function toggleSelection(event, jobId) {
+            event.stopPropagation();
+            if (selectedJobs.has(jobId)) {
+                selectedJobs.delete(jobId);
+            } else {
+                selectedJobs.add(jobId);
+            }
+            updateBulkBar();
+        }
+
+        function updateBulkBar() {
+            const count = document.getElementById('bulkCount');
+            count.textContent = selectedJobs.size + ' selected';
+            if (selectedJobs.size === 0) {
+                document.getElementById('bulkStatus').value = '';
+                document.getElementById('selectAll').checked = false;
+            }
+        }
+
+        function toggleSelectAll(checked) {
+            document.querySelectorAll('.job-card .job-checkbox').forEach(cb => {
+                cb.checked = checked;
+                const jobId = cb.getAttribute('data-job-id');
+                if (checked) {
+                    selectedJobs.add(jobId);
+                } else {
+                    selectedJobs.delete(jobId);
+                }
+            });
+            updateBulkBar();
+        }
+
+        function clearSelection() {
+            selectedJobs.clear();
+            document.querySelectorAll('.job-checkbox').forEach(cb => cb.checked = false);
+            updateBulkBar();
+        }
+
+        function applyBulkStatus() {
+            const status = document.getElementById('bulkStatus').value;
+            if (!status) return;
+
+            const ids = [...selectedJobs];
+            // Update each job locally and via API
+            ids.forEach(jobId => {
+                const job = jobsData.find(j => j.id === jobId);
+                if (job) job.app_status = status;
+
+                fetch('/api/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ job_id: jobId, status: status })
+                }).catch(err => console.error('Error saving status:', err));
+            });
+
+            selectedJobs.clear();
+            document.getElementById('bulkStatus').value = '';
+            filterAndSortJobs();
+            updateBulkBar();
+        }
 
         // Event listeners
         document.getElementById('minScore').addEventListener('input', (e) => {

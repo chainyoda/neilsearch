@@ -54,6 +54,21 @@ def api_jobs():
     return jsonify(jobs)
 
 
+@app.route("/api/status", methods=["POST"])
+def api_status():
+    """Update application status for a job."""
+    data = request.get_json()
+    job_id = data.get("job_id", "")
+    status = data.get("status", "")
+    with Database() as db:
+        db.init_db()
+        if status:
+            db.update_application_status(job_id, status)
+        else:
+            db.delete_application_status(job_id)
+    return jsonify({"ok": True})
+
+
 @app.route("/api/refresh")
 def api_refresh():
     """Trigger a job scan (returns immediately, scan runs in background)."""
@@ -71,10 +86,9 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("NeilSearch Dashboard Server")
     print("=" * 60)
-    print("\nLocal URL: http://localhost:5000")
-    print("\nTo make accessible externally, run in another terminal:")
-    print("  ngrok http 5000")
-    print("\nThen share the ngrok URL with your son!")
+    print("\nLocal URL: http://localhost:5001")
+    print("\nThe server is bound to 0.0.0.0:5001 (accessible from anywhere)")
+    print("External URL: http://<your-ip>:5001")
     print("=" * 60 + "\n")
 
     app.run(host="0.0.0.0", port=5001, debug=False)
